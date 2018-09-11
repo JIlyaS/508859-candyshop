@@ -8,7 +8,13 @@ var CONTENTS_GOODS = ['молоко', 'сливки', 'вода', 'пищево�
 var PICTURE_GOODS = ['gum-cedar', 'gum-chile', 'gum-eggplant', 'gum-mustard', 'gum-portwine', 'gum-wasabi', 'ice-cucumber', 'ice-eggplant', 'ice-garlic', 'ice-italian', 'ice-mushroom', 'ice-pig', 'marmalade-beer', 'marmalade-caviar', 'marmalade-corn', 'marmalade-new-year', 'marmalade-sour',
   'marshmallow-bacon', 'marshmallow-beer', 'marshmallow-shrimp', 'marshmallow-spicy', 'marshmallow-wine', 'soda-bacon', 'soda-celery', 'soda-cob', 'soda-garlic', 'soda-peanut-grapes', 'soda-russian'];
 // Рейтинг
-var RATING_ARRAY = [undefined, 'stars__rating--one', 'stars__rating--two', 'stars__rating--three', 'stars__rating--four', 'stars__rating--five'];
+var RATING_ARRAY = {
+  1: 'stars__rating--one',
+  2: 'stars__rating--two',
+  3: 'stars__rating--three',
+  4: 'stars__rating--four',
+  5: 'stars__rating--five'
+};
 
 var catalogGoods = 26;
 var basketGoods = 3;
@@ -59,9 +65,7 @@ var catalogLoad = document.querySelector('.catalog__load');
 catalogLoad.classList.add('visually-hidden');
 
 // Находим шаблон, который будем копировать
-var goodElements = document.querySelector('#card')
-                           .content
-                           .querySelector('.catalog__card');
+var goodElements = document.querySelector('#card').content.querySelector('.catalog__card');
 
 // Есть ли сахар
 function isSugar(goodElement, good) {
@@ -119,9 +123,7 @@ function showGoods(callback, catalog, length) {
   catalog.appendChild(fragment);
 }
 
-var cardElements = document.querySelector('#card-order')
-                          .content
-                          .querySelector('.goods_card');
+var cardElements = document.querySelector('#card-order').content.querySelector('.goods_card');
 
 var goodsCards = document.querySelector('.goods__cards');
 var goodsCardEmpty = document.querySelector('.goods__card-empty');
@@ -136,8 +138,6 @@ function addElementsCard(good) {
   cardOrderImg.src = good.picture;
   var cardOrderPrice = cardElement.querySelector('.card-order__price');
   cardOrderPrice.innerHTML = good.price + '&nbsp;₽';
-  var cardOrderCount = cardElement.querySelector('.card-order__count');
-  cardOrderCount.value = good.amount;
 
   return cardElement;
 }
