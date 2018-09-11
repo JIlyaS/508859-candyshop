@@ -5,8 +5,13 @@ var NAME_GOODS = ['Чесночные сливки', 'Огуречный пед�
 // Массив ингридиентов
 var CONTENTS_GOODS = ['молоко', 'сливки', 'вода', 'пищевой краситель', 'патока', 'ароматизатор бекона', 'ароматизатор свинца', 'ароматизатор дуба, идентичный натуральному', 'ароматизатор картофеля', 'лимонная кислота', 'загуститель', 'эмульгатор', 'консервант: сорбат калия', 'посолочная смесь: соль, нитрит натрия', 'ксилит', 'карбамид', 'вилларибо', 'виллабаджо'];
 // Расширения файлов
-var PICTURE_GOODS = ['gum-cedar.jpg', 'gum-chile.jpg', 'gum-eggplant.jpg', 'gum-mustard.jpg', 'gum-portwine.jpg', 'gum-wasabi.jpg', 'ice-cucumber.jpg', 'ice-eggplant.jpg', 'ice-garlic.jpg', 'ice-italian.jpg', 'ice-mushroom.jpg', 'ice-pig.jpg', 'marmalade-beer.jpg', 'marmalade-caviar.jpg', 'marmalade-corn.jpg', 'marmalade-new-year.jpg', 'marmalade-sour.jpg',
-  'marshmallow-bacon.jpg', 'marshmallow-beer.jpg', 'marshmallow-shrimp.jpg', 'marshmallow-spicy.jpg', 'marshmallow-wine.jpg', 'soda-bacon.jpg', 'soda-celery.jpg', 'soda-cob.jpg', 'soda-garlic.jpg', 'soda-peanut-grapes.jpg', 'soda-russian.jpg'];
+var PICTURE_GOODS = ['gum-cedar', 'gum-chile', 'gum-eggplant', 'gum-mustard', 'gum-portwine', 'gum-wasabi', 'ice-cucumber', 'ice-eggplant', 'ice-garlic', 'ice-italian', 'ice-mushroom', 'ice-pig', 'marmalade-beer', 'marmalade-caviar', 'marmalade-corn', 'marmalade-new-year', 'marmalade-sour',
+  'marshmallow-bacon', 'marshmallow-beer', 'marshmallow-shrimp', 'marshmallow-spicy', 'marshmallow-wine', 'soda-bacon', 'soda-celery', 'soda-cob', 'soda-garlic', 'soda-peanut-grapes', 'soda-russian'];
+// Рейтинг
+var RATING_ARRAY = [undefined, 'stars__rating--one', 'stars__rating--two', 'stars__rating--three', 'stars__rating--four', 'stars__rating--five'];
+
+var catalogGoods = 26;
+var basketGoods = 3;
 
 // Генерируем строку ингридиентов
 function generateString() {
@@ -19,21 +24,27 @@ function generateString() {
   return composition.slice(0, -2) + '.';
 }
 
+function randomMath(length, start) {
+  start = typeof start !== 'undefined' ? start : 0;
+
+  return Math.floor(Math.random() * length) + start;
+}
+
 // Генерируем 26 объектов описания товара
-function generateGoods() {
+function generateGoods(i) {
   return {
-    name: NAME_GOODS[Math.floor(Math.random() * NAME_GOODS.length)], // Название товара
-    picture: 'img/cards/' + PICTURE_GOODS[Math.floor(Math.random() * PICTURE_GOODS.length)], // Адрес изображения товара
-    amount: Math.floor(Math.random() * 20), // Количество
-    price: Math.floor(Math.random() * 1400) + 100, // Стоимость
-    weight: Math.floor(Math.random() * 270) + 30, // Вес
+    name: NAME_GOODS[i], // Название товара
+    picture: 'img/cards/' + PICTURE_GOODS[i] + '.jpg', // Адрес изображения товара
+    amount: randomMath(20), // Количество
+    price: randomMath(1400, 100), // Стоимость
+    weight: randomMath(270, 30), // Вес
     rating: { // Рейтинг
-      value: Math.floor(Math.random() * 4) + 1, // Оценка
-      number: Math.floor(Math.random() * 890) + 10 // Количество оценок
+      value: randomMath(5, 1), // Оценка
+      number: randomMath(890, 10) // Количество оценок
     },
     nutritionFacts: { // Состав
       sugar: !!Math.round(Math.random()), // Содержание сахара
-      energy: Math.floor(Math.random() * 430) + 70, // Энергетическая ценность
+      energy: randomMath(430, 70), // Энергетическая ценность
       contents: generateString() // Состав
     }
   };
@@ -52,18 +63,30 @@ var goodElements = document.querySelector('#card')
                            .content
                            .querySelector('.catalog__card');
 
-// Генерируем товар - создаем DOM-элементы и заполняем данными из массива
-function renderGood(good) {
-  var goodElement = goodElements.cloneNode(true); // Клонируем товар
+// Есть ли сахар
+function isSugar(goodElement, good) {
+  // Характеристики сахара и состав
+  var cardCharacteristic = goodElement.querySelector('.card__characteristic');
 
-  // В зависимости от количества обавляем класс
+  cardCharacteristic.textContent = good.nutritionFacts.sugar === true ? 'Содержит сахар' : 'Без сахара';
+}
+
+function getAmountClass(good, goodElement) {
+  // В зависимости от количества добавляем класс
   if (good.amount > 5) {
     goodElement.classList.add('card--in-stock');
-  } else if (good.amount > 1 && good.amount < 5) {
+  } else if (good.amount >= 1 && good.amount <= 5) {
     goodElement.classList.add('card--little');
   } else if (good.amount === 0) {
     goodElement.classList.add('card--soon');
   }
+}
+
+// Генерируем товар - создаем DOM-элементы и заполняем данными из массива
+function renderGood(good) {
+  var goodElement = goodElements.cloneNode(true); // Клонируем товар
+
+  getAmountClass(good, goodElement);
 
   var cardTitle = goodElement.querySelector('.card__title');
   cardTitle.textContent = good.name; // Вставим название в блок
@@ -75,30 +98,13 @@ function renderGood(good) {
   // Добавляем класс рейтинга в зависимоти от значения
   var starsRating = goodElement.querySelector('.stars__rating');
   starsRating.classList.remove('stars__rating--five');
-
-  if (good.rating.value === 1) {
-    starsRating.classList.add('stars__rating--one');
-  } else if (good.rating.value === 2) {
-    starsRating.classList.add('stars__rating--two');
-  } else if (good.rating.value === 3) {
-    starsRating.classList.add('stars__rating--three');
-  } else if (good.rating.value === 4) {
-    starsRating.classList.add('stars__rating--four');
-  } else if (good.rating.value === 5) {
-    starsRating.classList.add('stars__rating--five');
-  }
+  starsRating.classList.add(RATING_ARRAY[good.rating.value]);
 
   // Рейтинг
   var starCount = goodElement.querySelector('.star__count');
   starCount.textContent = good.rating.number;
-  // Характеристики сахара и состав
-  var cardCharacteristic = goodElement.querySelector('.card__characteristic');
 
-  if (good.nutritionFacts.sugar === true) {
-    cardCharacteristic.textContent = 'Содержит сахар';
-  } else {
-    cardCharacteristic.textContent = 'Без сахара';
-  }
+  isSugar(goodElement, good);
 
   return goodElement;
 }
@@ -107,7 +113,7 @@ function showGoods(callback, catalog, length) {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < length; i++) {
-    fragment.appendChild(callback(generateGoods()));
+    fragment.appendChild(callback(generateGoods(i)));
   }
 
   catalog.appendChild(fragment);
@@ -139,5 +145,5 @@ function addElementsCard(good) {
 goodsCards.classList.remove('goods__cards--empty');
 goodsCardEmpty.classList.add('visually-hidden');
 
-showGoods(renderGood, catalogCards, 26);
-showGoods(addElementsCard, goodsCards, 3);
+showGoods(renderGood, catalogCards, catalogGoods);
+showGoods(addElementsCard, goodsCards, basketGoods);
