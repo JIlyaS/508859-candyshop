@@ -137,7 +137,7 @@ function addElementsCard(good) {
   var cardOrderImg = cardElement.querySelector('.card-order__img');
   cardOrderImg.src = good.picture;
   var cardOrderPrice = cardElement.querySelector('.card-order__price');
-  cardOrderPrice.innerHTML = good.price + '&nbsp;₽';
+  cardOrderPrice.textContent = good.price + ' ₽';
 
   return cardElement;
 }
@@ -147,3 +147,36 @@ goodsCardEmpty.classList.add('visually-hidden');
 
 showGoods(renderGood, catalogCards, catalogGoods);
 showGoods(addElementsCard, goodsCards, basketGoods);
+
+// Проверка номера банковской карты по алгоритму Луна
+// Тестовая строка
+var number = '133567890123456';
+// var numberBankCard = document.querySelector('#payment__card-number');
+
+function checkLuhn(num) {
+  // Разделяет строку на отдельные символы
+  var arrNumber = num.split('');
+
+  var newArrNumber = arrNumber.map(function (element, index) {
+    // Преобразуем каждую строку в число
+    var mapElement = parseInt(element, 10);
+    // Производим операцию с каждым нечётным числом
+    if (index % 2 === 1) {
+      mapElement = (mapElement * 2 > 9) ? (mapElement * 2) - 9 : mapElement * 2;
+    }
+
+    return mapElement;
+  });
+  // Суммируем каждый элемент друг с другом
+  var result = newArrNumber.reduce(function (previous, current) {
+    return previous + current;
+  });
+  // Если результат больше 10 и кратен 10 то возвращаем истину
+  if (result >= 10 && result % 10 === 0) {
+    return true;
+  }
+
+  return false;
+}
+
+checkLuhn(number);
