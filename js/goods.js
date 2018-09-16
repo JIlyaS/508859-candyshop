@@ -148,10 +148,11 @@ goodsCardEmpty.classList.add('visually-hidden');
 showGoods(renderGood, catalogCards, catalogGoods);
 showGoods(addElementsCard, goodsCards, basketGoods);
 
+
 // Проверка номера банковской карты по алгоритму Луна
 // Тестовая строка
-var number = '133567890123456';
-// var numberBankCard = document.querySelector('#payment__card-number');
+// var number = '133567890123456';
+var numberBankCard = document.querySelector('#payment__card-number');
 
 function checkLuhn(num) {
   // Разделяет строку на отдельные символы
@@ -179,4 +180,114 @@ function checkLuhn(num) {
   return false;
 }
 
-checkLuhn(number);
+// checkLuhn(number);
+
+numberBankCard.addEventListener('change', function () {
+  return checkLuhn(numberBankCard.value);
+});
+
+
+// События
+
+// Обработчик событий на форме
+var form = document.querySelector('form');
+// var buySubmitBtn = document.querySelector('.buy__submit-btn');
+form.addEventListener('click', function (evt) {
+  var target = evt.target;
+  console.log(target);
+}, true);
+
+// Валидация первой подформы
+var contactDataName = document.querySelector('#contact-data__name');
+contactDataName.addEventListener('invalid', function () {
+  console.log('123');
+  if (contactDataName.validity.tooShort) {
+    contactDataName.setCustomValidity('Имя должно состоять минимум из 2-х символов');
+  } else if (contactDataName.validity.tooLong) {
+    contactDataName.setCustomValidity('Имя не должно превышать 25-ти символов');
+  } else if (contactDataName.validity.valueMissing) {
+    contactDataName.setCustomValidity('Обязательное поле');
+  } else {
+    contactDataName.setCustomValidity('');
+  }
+});
+
+var contactDataTel = document.querySelector('#contact-data__tel');
+contactDataTel.addEventListener('invalid', function () {
+  if (contactDataTel.validity.tooShort || contactDataTel.validity.tooLong) {
+    contactDataTel.setCustomValidity('Номер телефона должен состоять из 11 символов');
+  } else if (contactDataTel.validity.patternMismatch) {
+    contactDataTel.setCustomValidity('Номер телефона должен состоять из 11 цифр');
+  } else if (contactDataTel.validity.valueMissing) {
+    contactDataTel.setCustomValidity('Обязательное поле');
+  } else {
+    contactDataTel.setCustomValidity('');
+  }
+});
+
+var paymentCardNumber = document.querySelector('#payment__card-number');
+paymentCardNumber.addEventListener('invalid', function () {
+  if (paymentCardNumber.validity.tooShort || paymentCardNumber.validity.tooLong) {
+    paymentCardNumber.setCustomValidity('Номер банковской карты должен состоять из 16 цифр');
+  } else if (paymentCardNumber.validity.patternMismatch) {
+    paymentCardNumber.setCustomValidity('Номер банковской карты не должен содержать буквы и знаки препинания');
+  } else if (paymentCardNumber.validity.valueMissing) {
+    paymentCardNumber.setCustomValidity('Обязательное поле');
+  } else {
+    paymentCardNumber.setCustomValidity('');
+  }
+});
+
+// Автодополнение символа /
+var paymentCardDate = document.querySelector('#payment__card-date');
+
+function inputKeyupHandler(evt) {
+  if (evt.keyCode !== 8) {
+    if (paymentCardDate.value.length === 2) {
+      // console.log(paymentCardDate.value);
+      paymentCardDate.value += '/';
+    }
+  }
+}
+
+paymentCardDate.addEventListener('keyup', inputKeyupHandler);
+
+paymentCardDate.addEventListener('invalid', function () {
+  if (paymentCardDate.validity.tooShort || paymentCardDate.validity.tooLong) {
+    paymentCardDate.setCustomValidity('Формат даты должен состоять из 5 символов');
+  } else if (paymentCardDate.validity.patternMismatch) {
+    paymentCardDate.setCustomValidity('Формат даты должен быть мм/ГГ и состоять только из цифр');
+  } else if (paymentCardDate.validity.valueMissing) {
+    paymentCardDate.setCustomValidity('Обязательное поле');
+  } else {
+    paymentCardDate.setCustomValidity('');
+  }
+});
+
+var paymentСardСvc = document.querySelector('#payment__card-cvc');
+paymentСardСvc.addEventListener('invalid', function () {
+  if (paymentСardСvc.validity.tooShort || paymentСardСvc.validity.tooLong) {
+    paymentСardСvc.setCustomValidity('Номер CVC должен состоять из трёх цифр');
+  } else if (paymentСardСvc.validity.patternMismatch) {
+    paymentСardСvc.setCustomValidity('Поле CVC содержит только цифры');
+  } else if (paymentСardСvc.validity.valueMissing) {
+    paymentСardСvc.setCustomValidity('Обязательное поле');
+  } else {
+    paymentСardСvc.setCustomValidity('');
+  }
+});
+
+var paymentCardholder = document.querySelector('#payment__cardholder');
+paymentCardholder.addEventListener('invalid', function () {
+  if (paymentCardholder.validity.tooShort) {
+    paymentCardholder.setCustomValidity('Имя держателя карты должно состоять минимум из 4-х символов');
+  } else if (paymentCardholder.validity.tooLong) {
+    paymentCardholder.setCustomValidity('Имя держателя карты не должно превышать 50-ти символов');
+  } else if (paymentCardholder.validity.patternMismatch) {
+    paymentCardholder.setCustomValidity('Имя держателя карты должно быть на английском языке');
+  } else if (paymentCardholder.validity.valueMissing) {
+    paymentCardholder.setCustomValidity('Обязательное поле');
+  } else {
+    paymentCardholder.setCustomValidity('');
+  }
+});
