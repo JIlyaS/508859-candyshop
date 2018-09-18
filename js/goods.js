@@ -156,14 +156,12 @@ var numberBankCard = document.querySelector('#payment__card-number');
 
 function checkLuhn(num) {
   // Разделяет строку на отдельные символы
-  var arrNumber = num.split('');
-
-  var newArrNumber = arrNumber.map(function (element, index) {
+  var newArrNumber = num.split('').map(function (element, index) {
     // Преобразуем каждую строку в число
     var mapElement = parseInt(element, 10);
     // Производим операцию с каждым нечётным числом
     if (index % 2 === 1) {
-      mapElement = (mapElement * 2 > 9) ? (mapElement * 2) - 9 : mapElement * 2;
+      mapElement = mapElement * 2 > 9 ? (mapElement * 2) - 9 : mapElement * 2;
     }
 
     return mapElement;
@@ -173,11 +171,7 @@ function checkLuhn(num) {
     return previous + current;
   });
   // Если результат больше 10 и кратен 10 то возвращаем истину
-  if (result >= 10 && result % 10 === 0) {
-    return true;
-  }
-
-  return false;
+  return !!(result >= 10 && result % 10 === 0);
 }
 
 // checkLuhn(number);
@@ -189,41 +183,46 @@ numberBankCard.addEventListener('change', function () {
 
 // События
 
+var MESSAGE_ERRORS = {
+  contactDataName: {
+    tooShort: 'Имя должно состоять минимум из 2-х символов',
+    tooLong: 'Имя не должно превышать 25-ти символов',
+    valueMissing: 'Обязательное поле'
+  },
+  contactDataTel: {
+    tooShort: 'Номер телефона должен состоять из 11 цифр',
+    tooLong: 'Номер телефона должен состоять из 11 цифр',
+    valueMissing: 'Обязательное поле'
+  }
+};
+
+function getCustomErrors(el, obj) {
+  el.addEventListener('invalid', function () {
+    if (el.validity.tooShort) {
+      el.setCustomValidity(obj.tooShort);
+    } else if (el.validity.tooLong) {
+      el.setCustomValidity(obj.toLong);
+    } else if (el.validity.valueMissing) {
+      el.setCustomValidity(obj.valueMissing);
+    } else {
+      el.setCustomValidity('');
+    }
+  });
+}
+
 // Обработчик событий на форме
-var form = document.querySelector('form');
-// var buySubmitBtn = document.querySelector('.buy__submit-btn');
-form.addEventListener('click', function (evt) {
-  var target = evt.target;
-  console.log(target);
-}, true);
-
-// Валидация первой подформы
+var form = document.querySelector('form:nth-child(2)');
 var contactDataName = document.querySelector('#contact-data__name');
-contactDataName.addEventListener('invalid', function () {
-  console.log('123');
-  if (contactDataName.validity.tooShort) {
-    contactDataName.setCustomValidity('Имя должно состоять минимум из 2-х символов');
-  } else if (contactDataName.validity.tooLong) {
-    contactDataName.setCustomValidity('Имя не должно превышать 25-ти символов');
-  } else if (contactDataName.validity.valueMissing) {
-    contactDataName.setCustomValidity('Обязательное поле');
-  } else {
-    contactDataName.setCustomValidity('');
-  }
-});
-
 var contactDataTel = document.querySelector('#contact-data__tel');
-contactDataTel.addEventListener('invalid', function () {
-  if (contactDataTel.validity.tooShort || contactDataTel.validity.tooLong) {
-    contactDataTel.setCustomValidity('Номер телефона должен состоять из 11 символов');
-  } else if (contactDataTel.validity.patternMismatch) {
-    contactDataTel.setCustomValidity('Номер телефона должен состоять из 11 цифр');
-  } else if (contactDataTel.validity.valueMissing) {
-    contactDataTel.setCustomValidity('Обязательное поле');
-  } else {
-    contactDataTel.setCustomValidity('');
+
+form.addEventListener('invalid', function (evt) {
+  var target = evt.target;
+  if (contactDataName === target) {
+    getCustomErrors(contactDataName, MESSAGE_ERRORS['contactDataName']);
+  } else if (contactDataTel === target) {
+    getCustomErrors(contactDataTel, MESSAGE_ERRORS['contactDataTel']);
   }
-});
+}, true);
 
 var paymentCardNumber = document.querySelector('#payment__card-number');
 paymentCardNumber.addEventListener('invalid', function () {
