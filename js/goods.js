@@ -292,12 +292,15 @@ showGoods(renderGood, catalogCards, catalogGoods);
 
 // 3. Переключение вкладок в форме оформления заказа
 var deliver = document.querySelector('.deliver');
+var deliverStore = document.querySelector('.deliver__store');
+var deliverCourier = document.querySelector('.deliver__courier');
+
+disabledInput(deliverCourier, true);
+
 deliver.addEventListener('click', deliverClickHandler);
 
 function deliverClickHandler(evt) {
   var target = evt.target;
-  var deliverStore = document.querySelector('.deliver__store');
-  var deliverCourier = document.querySelector('.deliver__courier');
   var inputClass = target.closest('.toggle-btn__input');
   if (!inputClass) {
     return;
@@ -435,9 +438,10 @@ function getCoords(elem) {
 }
 
 // Проверка номера банковской карты по алгоритму Луна
-var numberBankCard = document.querySelector('#payment__card-number');
-
 function checkLuhn(num) {
+  if (num === null && typeof num === 'undefined' && num.trim() === '') {
+    return false;
+  }
   // Разделяет строку на отдельные символы
   var newArrNumber = num.split('').map(function (element, index) {
     // Преобразуем каждую строку в число
@@ -456,10 +460,6 @@ function checkLuhn(num) {
   // Если результат больше 10 и кратен 10 то возвращаем истину
   return !!(result >= 10 && result % 10 === 0);
 }
-
-numberBankCard.addEventListener('change', function () {
-  return checkLuhn(numberBankCard.value);
-});
 
 
 // События
@@ -481,6 +481,7 @@ var MESSAGE_ERRORS = {
     tooShort: 'Номер банковской карты должен состоять из 16 цифр',
     tooLong: 'Номер банковской карты должен состоять из 16 цифр',
     patternMismatch: 'Номер банковской карты не должен содержать буквы и знаки препинания',
+    customError: 'Данные карты не прошли проверку подлинности',
     valueMissing: 'Обязательное поле'
   },
   paymentCardDate: {
@@ -537,6 +538,8 @@ function getCustomErrors(el, obj) {
       el.setCustomValidity(obj.patternMismatch);
     } else if (el.validity.valueMissing) {
       el.setCustomValidity(obj.valueMissing);
+    } else if (el === paymentCardNumber && !checkLuhn(paymentCardNumber.value)) {
+      el.setCustomValidity(obj.customError);
     } else {
       el.setCustomValidity('');
     }
@@ -592,8 +595,17 @@ form.addEventListener('invalid', function (evt) {
     getCustomErrors(deliverRoom, MESSAGE_ERRORS['deliverRoom']);
   }
 }, true);
-//checkLuhn(numberBankCard.value);
-paymentCardNumber.addEventListener('change', function () {
-  // console.log(numberBankCard.value);
-  return checkLuhn(numberBankCard.value);
-});
+
+form.addEventListener('change', dataValiditySubmitHandler);
+
+var paymentCardStatus = document.querySelector('.payment__card-status');
+
+function dataValiditySubmitHandler() {
+  if (paymentCardNumber.validity.valid &&
+      checkLuhn(paymentCardNumber.value) &&
+      paymentCardDate.validity.valid &&
+      paymentСardСvc.validity.valid &&
+      paymentCardholder.validity.valid) {
+    paymentCardStatus.textContent = 'Одобрен';
+  }
+}
