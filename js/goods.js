@@ -446,8 +446,8 @@ function checkLuhn(num) {
   var newArrNumber = num.split('').map(function (element, index) {
     // Преобразуем каждую строку в число
     var mapElement = parseInt(element, 10);
-    // Производим операцию с каждым нечётным числом
-    if (index % 2 === 1) {
+    // Производим операцию с каждым нечётным числом - начинается с 0, значит индексы 0,2,4... - нечётные
+    if (index % 2 === 0) {
       mapElement = mapElement * 2 > 9 ? (mapElement * 2) - 9 : mapElement * 2;
     }
 
