@@ -17,6 +17,10 @@ var RATING_ARRAY = {
   5: 'stars__rating--five'
 };
 
+var MIN = 0;
+var MAX = 245;
+var ELEMENT_WIDTH = 240;
+
 // Магические переменные
 var catalogGoods = 26;
 
@@ -124,12 +128,12 @@ function renderGood(good) {
 
   // Функция добавления товара в корзину
   function btnCardClickHandler() {
-    goodsCards.classList.remove('goods__cards--empty');
-    goodsCardEmpty.classList.add('visually-hidden');
-    // Копируем товар
-    var goodCard = Object.assign({}, good);
-    // Если количество больше 0, то добавляем товар в корзину
     if (good.amount > 0) {
+      goodsCards.classList.remove('goods__cards--empty');
+      goodsCardEmpty.classList.add('visually-hidden');
+      // Копируем товар
+      var goodCard = Object.assign({}, good);
+      // Если количество больше 0, то добавляем товар в корзину
       // Если товар уже содержится в корзине, увеличиваем количество товара
       if (contains(basketCards, goodCard)) {
         addGoodAmount(basketCards, goodCard);
@@ -142,9 +146,9 @@ function renderGood(good) {
       mainHeaderBasket.textContent = getCountBasket(basketCards);
       // Уменьшить количество товара на единицу при добавлении товара
       good.amount--;
-    }
 
-    showBasket(basketCards, goodsCards, addElementsCard);
+      showBasket(basketCards, goodsCards, addElementsCard);
+    }
   }
 
   return goodElement;
@@ -338,9 +342,6 @@ var priceMax = document.querySelector('.range__price--max');
 
 var min = parseInt(getComputedStyle(rangeMin).left, 10);
 var max = parseInt(getComputedStyle(rangeMax).left, 10);
-var MIN = 0;
-var MAX = 245;
-var ELEMENT_WIDTH = 240;
 
 // Координаты слайдера
 var sliderLineCoords = getCoords(sliderLine);
@@ -434,8 +435,6 @@ function getCoords(elem) {
 }
 
 // Проверка номера банковской карты по алгоритму Луна
-// Тестовая строка
-// var number = '133567890123456';
 var numberBankCard = document.querySelector('#payment__card-number');
 
 function checkLuhn(num) {
@@ -458,8 +457,6 @@ function checkLuhn(num) {
   return !!(result >= 10 && result % 10 === 0);
 }
 
-// checkLuhn(number);
-
 numberBankCard.addEventListener('change', function () {
   return checkLuhn(numberBankCard.value);
 });
@@ -471,11 +468,61 @@ var MESSAGE_ERRORS = {
   contactDataName: {
     tooShort: 'Имя должно состоять минимум из 2-х символов',
     tooLong: 'Имя не должно превышать 25-ти символов',
+    patternMismatch: '',
     valueMissing: 'Обязательное поле'
   },
   contactDataTel: {
     tooShort: 'Номер телефона должен состоять из 11 цифр',
     tooLong: 'Номер телефона должен состоять из 11 цифр',
+    patternMismatch: '',
+    valueMissing: 'Обязательное поле'
+  },
+  paymentCardNumber: {
+    tooShort: 'Номер банковской карты должен состоять из 16 цифр',
+    tooLong: 'Номер банковской карты должен состоять из 16 цифр',
+    patternMismatch: 'Номер банковской карты не должен содержать буквы и знаки препинания',
+    valueMissing: 'Обязательное поле'
+  },
+  paymentCardDate: {
+    tooShort: 'Формат даты должен состоять из 5 символов',
+    tooLong: 'Формат даты должен состоять из 5 символов',
+    patternMismatch: 'Формат даты должен быть мм/ГГ и состоять только из цифр',
+    valueMissing: 'Обязательное поле'
+  },
+  paymentСardСvc: {
+    tooShort: 'Номер CVC должен состоять из трёх цифр',
+    tooLong: 'Номер CVC должен состоять из трёх цифр',
+    patternMismatch: 'Поле CVC содержит только цифры',
+    valueMissing: 'Обязательное поле'
+  },
+  paymentCardholder: {
+    tooShort: 'Имя держателя карты должно состоять минимум из 4-х символов',
+    tooLong: 'Имя держателя карты не должно превышать 50-ти символов',
+    patternMismatch: 'Имя держателя карты должно быть написано латиницей',
+    valueMissing: 'Обязательное поле'
+  },
+  deliverStreet: {
+    tooShort: '',
+    tooLong: 'Название улицы не должно превышать 50-ти символов',
+    patternMismatch: '',
+    valueMissing: 'Обязательное поле'
+  },
+  deliverHouse: {
+    tooShort: '',
+    tooLong: '',
+    patternMismatch: '',
+    valueMissing: 'Обязательное поле'
+  },
+  deliverFloor: {
+    tooShort: '',
+    tooLong: 'Этаж не должен превышать 3-х символов',
+    patternMismatch: 'Поле Этаж содержит только цифры',
+    valueMissing: ''
+  },
+  deliverRoom: {
+    tooShort: '',
+    tooLong: '',
+    patternMismatch: '',
     valueMissing: 'Обязательное поле'
   }
 };
@@ -486,6 +533,8 @@ function getCustomErrors(el, obj) {
       el.setCustomValidity(obj.tooShort);
     } else if (el.validity.tooLong) {
       el.setCustomValidity(obj.toLong);
+    } else if (el.validity.patternMismatch) {
+      el.setCustomValidity(obj.patternMismatch);
     } else if (el.validity.valueMissing) {
       el.setCustomValidity(obj.valueMissing);
     } else {
@@ -498,36 +547,20 @@ function getCustomErrors(el, obj) {
 var form = document.querySelector('form:nth-child(2)');
 var contactDataName = document.querySelector('#contact-data__name');
 var contactDataTel = document.querySelector('#contact-data__tel');
-
-form.addEventListener('invalid', function (evt) {
-  var target = evt.target;
-  if (contactDataName === target) {
-    getCustomErrors(contactDataName, MESSAGE_ERRORS['contactDataName']);
-  } else if (contactDataTel === target) {
-    getCustomErrors(contactDataTel, MESSAGE_ERRORS['contactDataTel']);
-  }
-}, true);
-
 var paymentCardNumber = document.querySelector('#payment__card-number');
-paymentCardNumber.addEventListener('invalid', function () {
-  if (paymentCardNumber.validity.tooShort || paymentCardNumber.validity.tooLong) {
-    paymentCardNumber.setCustomValidity('Номер банковской карты должен состоять из 16 цифр');
-  } else if (paymentCardNumber.validity.patternMismatch) {
-    paymentCardNumber.setCustomValidity('Номер банковской карты не должен содержать буквы и знаки препинания');
-  } else if (paymentCardNumber.validity.valueMissing) {
-    paymentCardNumber.setCustomValidity('Обязательное поле');
-  } else {
-    paymentCardNumber.setCustomValidity('');
-  }
-});
+var paymentCardDate = document.querySelector('#payment__card-date');
+var paymentСardСvc = document.querySelector('#payment__card-cvc');
+var paymentCardholder = document.querySelector('#payment__cardholder');
+var deliverStreet = document.querySelector('#deliver_street');
+var deliverHouse = document.querySelector('#deliver_house');
+var deliverFloor = document.querySelector('#deliver__floor');
+var deliverRoom = document.querySelector('#deliver__room');
+
 
 // Автодополнение символа /
-var paymentCardDate = document.querySelector('#payment__card-date');
-
 function inputKeyupHandler(evt) {
   if (evt.keyCode !== 8) {
     if (paymentCardDate.value.length === 2) {
-      // console.log(paymentCardDate.value);
       paymentCardDate.value += '/';
     }
   }
@@ -535,42 +568,32 @@ function inputKeyupHandler(evt) {
 
 paymentCardDate.addEventListener('keyup', inputKeyupHandler);
 
-paymentCardDate.addEventListener('invalid', function () {
-  if (paymentCardDate.validity.tooShort || paymentCardDate.validity.tooLong) {
-    paymentCardDate.setCustomValidity('Формат даты должен состоять из 5 символов');
-  } else if (paymentCardDate.validity.patternMismatch) {
-    paymentCardDate.setCustomValidity('Формат даты должен быть мм/ГГ и состоять только из цифр');
-  } else if (paymentCardDate.validity.valueMissing) {
-    paymentCardDate.setCustomValidity('Обязательное поле');
-  } else {
-    paymentCardDate.setCustomValidity('');
+form.addEventListener('invalid', function (evt) {
+  var target = evt.target;
+  if (contactDataName === target) {
+    getCustomErrors(contactDataName, MESSAGE_ERRORS['contactDataName']);
+  } else if (contactDataTel === target) {
+    getCustomErrors(contactDataTel, MESSAGE_ERRORS['contactDataTel']);
+  } else if (paymentCardNumber === target) {
+    getCustomErrors(paymentCardNumber, MESSAGE_ERRORS['paymentCardNumber']);
+  } else if (paymentCardDate === target) {
+    getCustomErrors(paymentCardDate, MESSAGE_ERRORS['paymentCardDate']);
+  } else if (paymentСardСvc === target) {
+    getCustomErrors(paymentСardСvc, MESSAGE_ERRORS['paymentСardСvc']);
+  } else if (paymentCardholder === target) {
+    getCustomErrors(paymentCardholder, MESSAGE_ERRORS['paymentCardholder']);
+  } else if (deliverStreet === target) {
+    getCustomErrors(deliverStreet, MESSAGE_ERRORS['deliverStreet']);
+  } else if (deliverHouse === target) {
+    getCustomErrors(deliverHouse, MESSAGE_ERRORS['deliverHouse']);
+  } else if (deliverFloor === target) {
+    getCustomErrors(deliverFloor, MESSAGE_ERRORS['deliverFloor']);
+  } else if (deliverRoom === target) {
+    getCustomErrors(deliverRoom, MESSAGE_ERRORS['deliverRoom']);
   }
-});
-
-var paymentСardСvc = document.querySelector('#payment__card-cvc');
-paymentСardСvc.addEventListener('invalid', function () {
-  if (paymentСardСvc.validity.tooShort || paymentСardСvc.validity.tooLong) {
-    paymentСardСvc.setCustomValidity('Номер CVC должен состоять из трёх цифр');
-  } else if (paymentСardСvc.validity.patternMismatch) {
-    paymentСardСvc.setCustomValidity('Поле CVC содержит только цифры');
-  } else if (paymentСardСvc.validity.valueMissing) {
-    paymentСardСvc.setCustomValidity('Обязательное поле');
-  } else {
-    paymentСardСvc.setCustomValidity('');
-  }
-});
-
-var paymentCardholder = document.querySelector('#payment__cardholder');
-paymentCardholder.addEventListener('invalid', function () {
-  if (paymentCardholder.validity.tooShort) {
-    paymentCardholder.setCustomValidity('Имя держателя карты должно состоять минимум из 4-х символов');
-  } else if (paymentCardholder.validity.tooLong) {
-    paymentCardholder.setCustomValidity('Имя держателя карты не должно превышать 50-ти символов');
-  } else if (paymentCardholder.validity.patternMismatch) {
-    paymentCardholder.setCustomValidity('Имя держателя карты должно быть на английском языке');
-  } else if (paymentCardholder.validity.valueMissing) {
-    paymentCardholder.setCustomValidity('Обязательное поле');
-  } else {
-    paymentCardholder.setCustomValidity('');
-  }
+}, true);
+//checkLuhn(numberBankCard.value);
+paymentCardNumber.addEventListener('change', function () {
+  // console.log(numberBankCard.value);
+  return checkLuhn(numberBankCard.value);
 });
