@@ -573,6 +573,7 @@ paymentCardDate.addEventListener('keyup', inputKeyupHandler);
 
 form.addEventListener('invalid', function (evt) {
   var target = evt.target;
+  console.log('123');
   if (contactDataName === target) {
     getCustomErrors(contactDataName, MESSAGE_ERRORS['contactDataName']);
   } else if (contactDataTel === target) {
@@ -580,6 +581,7 @@ form.addEventListener('invalid', function (evt) {
   } else if (paymentCardNumber === target) {
     getCustomErrors(paymentCardNumber, MESSAGE_ERRORS['paymentCardNumber']);
   } else if (paymentCardDate === target) {
+    console.log('123');
     getCustomErrors(paymentCardDate, MESSAGE_ERRORS['paymentCardDate']);
   } else if (paymentСardСvc === target) {
     getCustomErrors(paymentСardСvc, MESSAGE_ERRORS['paymentСardСvc']);
@@ -601,6 +603,10 @@ form.addEventListener('change', dataValiditySubmitHandler);
 var paymentCardStatus = document.querySelector('.payment__card-status');
 
 function dataValiditySubmitHandler() {
+  // console.log(paymentCardNumber.validity.valid);
+  // console.log(paymentCardDate.validity.valid);
+  // console.log(paymentСardСvc.validity.valid);
+  // console.log(paymentCardholder.validity.valid);
   if (paymentCardNumber.validity.valid &&
       checkLuhn(paymentCardNumber.value) &&
       paymentCardDate.validity.valid &&
