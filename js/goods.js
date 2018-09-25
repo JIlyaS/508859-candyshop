@@ -529,51 +529,36 @@ var MESSAGE_ERRORS = {
 };
 
 function getCustomErrors(el, obj) {
-  el.addEventListener('invalid', function () {
-    if (el.validity.tooShort) {
-      el.setCustomValidity(obj.tooShort);
-    } else if (el.validity.tooLong) {
-      el.setCustomValidity(obj.toLong);
-    } else if (el.validity.patternMismatch) {
-      el.setCustomValidity(obj.patternMismatch);
-    } else if (el.validity.valueMissing) {
-      el.setCustomValidity(obj.valueMissing);
-    } else if (el === paymentCardNumber && !checkLuhn(paymentCardNumber.value)) {
-      el.setCustomValidity(obj.customError);
-    } else {
-      el.setCustomValidity('');
-    }
-  });
+  if (el.validity.tooShort) {
+    el.setCustomValidity(obj.tooShort);
+  } else if (el.validity.tooLong) {
+    el.setCustomValidity(obj.toLong);
+  } else if (el.validity.patternMismatch) {
+    el.setCustomValidity(obj.patternMismatch);
+  } else if (el.validity.valueMissing) {
+    el.setCustomValidity(obj.valueMissing);
+  } else if (el === paymentCardNumber && !checkLuhn(paymentCardNumber.value)) {
+    el.setCustomValidity(obj.customError);
+  } else {
+    el.setCustomValidity('');
+  }
 }
 
 // Обработчик событий на форме
 var form = document.querySelector('form:nth-child(2)');
-var contactDataName = document.querySelector('#contact-data__name');
-var contactDataTel = document.querySelector('#contact-data__tel');
-var paymentCardNumber = document.querySelector('#payment__card-number');
-var paymentCardDate = document.querySelector('#payment__card-date');
-var paymentСardСvc = document.querySelector('#payment__card-cvc');
-var paymentCardholder = document.querySelector('#payment__cardholder');
-var deliverStreet = document.querySelector('#deliver_street');
-var deliverHouse = document.querySelector('#deliver_house');
-var deliverFloor = document.querySelector('#deliver__floor');
-var deliverRoom = document.querySelector('#deliver__room');
+var contactDataName = form.querySelector('#contact-data__name');
+var contactDataTel = form.querySelector('#contact-data__tel');
+var paymentCardNumber = form.querySelector('#payment__card-number');
+var paymentCardDate = form.querySelector('#payment__card-date');
+var paymentСardСvc = form.querySelector('#payment__card-cvc');
+var paymentCardholder = form.querySelector('#payment__cardholder');
+var deliverStreet = form.querySelector('#deliver_street');
+var deliverHouse = form.querySelector('#deliver_house');
+var deliverFloor = form.querySelector('#deliver__floor');
+var deliverRoom = form.querySelector('#deliver__room');
 
-
-// Автодополнение символа /
-function inputKeyupHandler(evt) {
-  if (evt.keyCode !== 8) {
-    if (paymentCardDate.value.length === 2) {
-      paymentCardDate.value += '/';
-    }
-  }
-}
-
-paymentCardDate.addEventListener('keyup', inputKeyupHandler);
-
-form.addEventListener('invalid', function (evt) {
+form.addEventListener('change', function (evt) {
   var target = evt.target;
-  console.log('123');
   if (contactDataName === target) {
     getCustomErrors(contactDataName, MESSAGE_ERRORS['contactDataName']);
   } else if (contactDataTel === target) {
@@ -581,7 +566,6 @@ form.addEventListener('invalid', function (evt) {
   } else if (paymentCardNumber === target) {
     getCustomErrors(paymentCardNumber, MESSAGE_ERRORS['paymentCardNumber']);
   } else if (paymentCardDate === target) {
-    console.log('123');
     getCustomErrors(paymentCardDate, MESSAGE_ERRORS['paymentCardDate']);
   } else if (paymentСardСvc === target) {
     getCustomErrors(paymentСardСvc, MESSAGE_ERRORS['paymentСardСvc']);
@@ -598,15 +582,22 @@ form.addEventListener('invalid', function (evt) {
   }
 }, true);
 
+// Автодополнение символа /
+function inputKeyupHandler(evt) {
+  if (evt.keyCode !== 8) {
+    if (paymentCardDate.value.length === 2) {
+      paymentCardDate.value += '/';
+    }
+  }
+}
+
+paymentCardDate.addEventListener('keyup', inputKeyupHandler);
+
 form.addEventListener('change', dataValiditySubmitHandler);
 
 var paymentCardStatus = document.querySelector('.payment__card-status');
 
 function dataValiditySubmitHandler() {
-  // console.log(paymentCardNumber.validity.valid);
-  // console.log(paymentCardDate.validity.valid);
-  // console.log(paymentСardСvc.validity.valid);
-  // console.log(paymentCardholder.validity.valid);
   if (paymentCardNumber.validity.valid &&
       checkLuhn(paymentCardNumber.value) &&
       paymentCardDate.validity.valid &&
