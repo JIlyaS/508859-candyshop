@@ -346,6 +346,9 @@ var priceMax = document.querySelector('.range__price--max');
 var min = parseInt(getComputedStyle(rangeMin).left, 10);
 var max = parseInt(getComputedStyle(rangeMax).left, 10);
 
+// sliderFillLine.style.left = sliderFillLine.offsetLeft + rangeMin.offsetWidth / 2 + 'px';
+// sliderFillLine.style.right = (ELEMENT_WIDTH + sliderFillLine.offsetWidth - rangeMax.offsetWidth / 2) + 'px';
+
 // Координаты слайдера
 var sliderLineCoords = getCoords(sliderLine);
 
@@ -372,13 +375,14 @@ function rangeMinMouseDownHandler(evt) {
 
     min = newLeft;
     rangeMin.style.left = newLeft + 'px';
-
-    sliderFillLine.style.left = newLeft + 'px';
+    sliderFillLine.style.left = (newLeft + rangeMin.offsetWidth / 2) + 'px';
   }
 
   document.addEventListener('mouseup', rangeMouseUpHandler);
 
   function rangeMouseUpHandler() {
+
+    // Расчёт пина и запись в поле должны дублироваться?
 
     priceMin.textContent = parseInt(min, 10);
     priceMax.textContent = parseInt(max, 10);
@@ -410,13 +414,14 @@ function rangeMaxMouseDownHandler(evt) {
 
     max = newRight;
     rangeMax.style.left = newRight + 'px';
-
     sliderFillLine.style.right = ELEMENT_WIDTH - newRight + 'px';
   }
 
   document.addEventListener('mouseup', rangeMouseUpHandler);
 
   function rangeMouseUpHandler() {
+
+    // Расчёт пина и запись в поле должны дублироваться?
 
     priceMin.textContent = parseInt(min, 10);
     priceMax.textContent = parseInt(max, 10);
