@@ -346,6 +346,13 @@ var priceMax = document.querySelector('.range__price--max');
 var min = parseInt(getComputedStyle(rangeMin).left, 10);
 var max = parseInt(getComputedStyle(rangeMax).left, 10);
 
+function getResultMinMax(minValue, maxValue) {
+  priceMin.textContent = parseInt(minValue, 10);
+  priceMax.textContent = parseInt(maxValue, 10);
+}
+
+getResultMinMax(min, max);
+
 // sliderFillLine.style.left = sliderFillLine.offsetLeft + rangeMin.offsetWidth / 2 + 'px';
 // sliderFillLine.style.right = (ELEMENT_WIDTH + sliderFillLine.offsetWidth - rangeMax.offsetWidth / 2) + 'px';
 
@@ -360,38 +367,39 @@ function rangeMinMouseDownHandler(evt) {
   var elMinCoords = getCoords(rangeMin);
   // MouseEvent.pageX - возвращает значение равное горизонтальной координате, относительно всего документа
   var shiftX = evt.pageX - elMinCoords.left;
-  document.addEventListener('mousemove', rangeMouseMoveHandler);
+  document.addEventListener('mousemove', rangeMinMouseMoveHandler);
 
-  function rangeMouseMoveHandler(e) {
-    var newLeft = e.pageX - shiftX - sliderLineCoords.left;
-
-    if (newLeft < MIN) {
-      newLeft = MIN;
-    }
-
-    if (newLeft > max - rangeMin.offsetWidth / 2) {
-      newLeft = max - rangeMin.offsetWidth / 2;
-    }
-
-    min = newLeft;
-    rangeMin.style.left = newLeft + 'px';
-    sliderFillLine.style.left = (newLeft + rangeMin.offsetWidth / 2) + 'px';
+  function rangeMinMouseMoveHandler(e) {
+    getLeftSliderCoords(e, shiftX);
   }
 
-  document.addEventListener('mouseup', rangeMouseUpHandler);
+  document.addEventListener('mouseup', rangeMinMouseUpHandler);
 
-  function rangeMouseUpHandler() {
+  function rangeMinMouseUpHandler(event) {
+    getLeftSliderCoords(event, shiftX);
+    getResultMinMax(min, max);
 
-    // Расчёт пина и запись в поле должны дублироваться?
-
-    priceMin.textContent = parseInt(min, 10);
-    priceMax.textContent = parseInt(max, 10);
-
-    document.removeEventListener('mousemove', rangeMouseMoveHandler);
-    document.removeEventListener('mouseup', rangeMouseUpHandler);
+    document.removeEventListener('mousemove', rangeMinMouseMoveHandler);
+    document.removeEventListener('mouseup', rangeMinMouseUpHandler);
   }
 
   return false;
+}
+
+function getLeftSliderCoords(e, shiftX) {
+  var newLeft = e.pageX - shiftX - sliderLineCoords.left;
+
+  if (newLeft < MIN) {
+    newLeft = MIN;
+  }
+
+  if (newLeft > max - rangeMin.offsetWidth / 2) {
+    newLeft = max - rangeMin.offsetWidth / 2;
+  }
+
+  min = newLeft;
+  rangeMin.style.left = newLeft + 'px';
+  sliderFillLine.style.left = (newLeft + rangeMin.offsetWidth / 2) + 'px';
 }
 
 function rangeMaxMouseDownHandler(evt) {
@@ -399,38 +407,39 @@ function rangeMaxMouseDownHandler(evt) {
   var elMaxCoords = getCoords(rangeMax);
   // MouseEvent.pageX - возвращает значение равное горизонтальной координате, относительно всего документа
   var shiftX = evt.pageX - elMaxCoords.left;
-  document.addEventListener('mousemove', rangeMouseMoveHandler);
+  document.addEventListener('mousemove', rangeMaxMouseMoveHandler);
 
-  function rangeMouseMoveHandler(e) {
-    var newRight = e.pageX - shiftX - sliderLineCoords.left;
-
-    if (newRight > MAX) {
-      newRight = MAX;
-    }
-
-    if (newRight < min + rangeMin.offsetWidth / 2) {
-      newRight = min + rangeMin.offsetWidth / 2;
-    }
-
-    max = newRight;
-    rangeMax.style.left = newRight + 'px';
-    sliderFillLine.style.right = ELEMENT_WIDTH - newRight + 'px';
+  function rangeMaxMouseMoveHandler(e) {
+    getRightSliderCoords(e, shiftX);
   }
 
-  document.addEventListener('mouseup', rangeMouseUpHandler);
+  document.addEventListener('mouseup', rangeMaxMouseUpHandler);
 
-  function rangeMouseUpHandler() {
+  function rangeMaxMouseUpHandler(event) {
+    getRightSliderCoords(event, shiftX);
+    getResultMinMax(min, max);
 
-    // Расчёт пина и запись в поле должны дублироваться?
-
-    priceMin.textContent = parseInt(min, 10);
-    priceMax.textContent = parseInt(max, 10);
-
-    document.removeEventListener('mousemove', rangeMouseMoveHandler);
-    document.removeEventListener('mouseup', rangeMouseUpHandler);
+    document.removeEventListener('mousemove', rangeMaxMouseMoveHandler);
+    document.removeEventListener('mouseup', rangeMaxMouseUpHandler);
   }
 
   return false;
+}
+
+function getRightSliderCoords(e, shiftX) {
+  var newRight = e.pageX - shiftX - sliderLineCoords.left;
+
+  if (newRight > MAX) {
+    newRight = MAX;
+  }
+
+  if (newRight < min + rangeMin.offsetWidth / 2) {
+    newRight = min + rangeMin.offsetWidth / 2;
+  }
+
+  max = newRight;
+  rangeMax.style.left = newRight + 'px';
+  sliderFillLine.style.right = ELEMENT_WIDTH - newRight + 'px';
 }
 
 function getCoords(elem) {
