@@ -88,6 +88,24 @@
     }
   }
 
+  // Добавить количество заказа в header
+  function getCountBasket(basket) {
+    var basketCountOrder = 0;
+    for (var m = 0; m < basket.length; m++) {
+      basketCountOrder += basket[m].orderedAmount;
+    }
+    return basketCountOrder;
+  }
+
+  // Добавить единицу, если товар уже лежит в корзине
+  function addGoodAmount(basket, goodCard) {
+    for (var m = 0; m < basket.length; m++) {
+      if (basket[m].name === goodCard.name) {
+        basket[m].orderedAmount++;
+      }
+    }
+  }
+
   // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
   function clickBtnFavoriteHandler(evt) {
     var cardFavotireElement = evt.currentTarget;
@@ -135,57 +153,10 @@
   window.load(successHandler, errorHandler);
 
   var mainHeaderBasket = document.querySelector('.main-header__basket');
-
-  // Добавить количество ззаказа в header
-  function getCountBasket(basket) {
-    var basketCountOrder = 0;
-    for (var m = 0; m < basket.length; m++) {
-      basketCountOrder += basket[m].orderedAmount;
-    }
-    return basketCountOrder;
-  }
-
-  // Добавить единицу, если товар уже лежит в корзине
-  function addGoodAmount(basket, goodCard) {
-    for (var m = 0; m < basket.length; m++) {
-      if (basket[m].name === goodCard.name) {
-        basket[m].orderedAmount++;
-      }
-    }
-  }
-
-  // Отобразить товар в корзине
-  function showBasket(basket, catalog, callback) {
-    removeBasket();
-    var fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < basket.length; i++) {
-      fragment.appendChild(callback(basket[i]));
-    }
-
-    catalog.appendChild(fragment);
-  }
-
-  // Очищаю корзину перед следующим рендерингом
-  function removeBasket() {
-    while (goodsCards.firstChild) {
-      goodsCards.removeChild(goodsCards.firstChild);
-    }
-  }
-
-  // Функция проверки - есть ли объект в массиве
-  function contains(basket, goodCard) {
-    for (var m = 0; m < basket.length; m++) {
-      if (basket[m].name === goodCard.name) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  var cardElements = document.querySelector('#card-order').content.querySelector('.goods_card');
   var goodsCards = document.querySelector('.goods__cards');
   var goodsCardEmpty = document.querySelector('.goods__card-empty');
+
+  var cardElements = document.querySelector('#card-order').content.querySelector('.goods_card');
 
   // Шаблонизируем товары в корзине
   function addElementsCard(good) {
@@ -243,12 +214,40 @@
 
   // Проверка, пуста ли корзина
   function isEmptyBasket() {
-
     if (basketCards.length === 0) {
       goodsCards.classList.add('goods__cards--empty');
       goodsCards.appendChild(goodsCardEmpty);
       goodsCardEmpty.classList.remove('visually-hidden');
     }
+  }
+
+  // Отобразить товар в корзине
+  function showBasket(basket, catalog, callback) {
+    removeBasket();
+    var fragment = document.createDocumentFragment();
+
+    for (var i = 0; i < basket.length; i++) {
+      fragment.appendChild(callback(basket[i]));
+    }
+
+    catalog.appendChild(fragment);
+  }
+
+  // Очищаю корзину перед следующим рендерингом
+  function removeBasket() {
+    while (goodsCards.firstChild) {
+      goodsCards.removeChild(goodsCards.firstChild);
+    }
+  }
+
+  // Функция проверки - есть ли объект в массиве
+  function contains(basket, goodCard) {
+    for (var m = 0; m < basket.length; m++) {
+      if (basket[m].name === goodCard.name) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // Создаем скрипт загрузки данных по JSONP и выводим его в index.html

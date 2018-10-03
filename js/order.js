@@ -22,12 +22,10 @@
     if (deliverId === 'deliver__store') {
       document.querySelector('.' + deliverId).classList.remove('visually-hidden');
       deliverCourier.classList.add('visually-hidden');
-      // disabledInput(deliverCourier);
       disabledInput(deliverCourier, true);
     } else if (deliverId === 'deliver__courier') {
       document.querySelector('.' + deliverId).classList.remove('visually-hidden');
       deliverStore.classList.add('visually-hidden');
-      // disabledInput(deliverStore, 'true');
       disabledInput(deliverCourier, false);
     }
   }
@@ -63,9 +61,6 @@
     // Если результат больше 10 и кратен 10 то возвращаем истину
     return !!(result >= 10 && result % 10 === 0);
   }
-
-
-  // События
 
   var MESSAGE_ERRORS = {
     contactDataName: {
@@ -185,7 +180,6 @@
     }
   }, true);
 
-  // Автодополнение символа /
   function inputKeyupHandler(evt) {
     if (evt.keyCode !== 8) {
       if (paymentCardDate.value.length === 2) {
