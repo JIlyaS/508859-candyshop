@@ -8,10 +8,6 @@
   // Уберите у блока catalog__cards класс catalog__cards--load
   var catalogCards = document.querySelector('.catalog__cards');
 
-  // Сообщение о загрузке
-  // var loadData = document.querySelector('#load-data').content.querySelector('.catalog__load');
-  // catalogLoad.appendChild(loadData);
-
   // Находим шаблон, который будем копировать
   var goodElements = document.querySelector('#card').content.querySelector('.catalog__card');
 
@@ -98,18 +94,11 @@
     cardFavotireElement.classList.toggle('card__btn-favorite--selected');
   }
 
-  function addElementsCatalog(length) {
-    for (var i = 0; i < length; i++) {
-      var elGood = window.data.generateGoods(i);
-      arrayGoods.push(elGood);
-    }
-  }
-
-  addElementsCatalog(window.data.CATALOG_LENGTH_GOODS);
-
   // Показать товары в каталоге
   function successHandler(dataCards) {
     catalogCards.classList.remove('catalog__cards--load');
+
+    arrayGoods = dataCards;
 
     // Добавлением класса visually-hidden блок catalog__load
     var catalogLoad = document.querySelector('.catalog__load');
