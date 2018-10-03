@@ -209,4 +209,52 @@
       paymentCardStatus.textContent = 'Одобрен';
     }
   }
+
+  function successFormHandler() {
+    var modalSuccess = document.querySelector('.modal--success');
+    modalSuccess.classList.remove('modal--hidden');
+
+    var modalСlose = modalSuccess.querySelector('.modal__close');
+    modalСlose.addEventListener('click', function () {
+      modalSuccess.classList.add('modal--hidden');
+    });
+
+    document.addEventListener('keydown', errorModalKeydownHandler);
+
+    function errorModalKeydownHandler(evt) {
+      if (evt.keyCode === 27) {
+        modalSuccess.classList.add('modal--hidden');
+        document.removeEventListener('keydown', errorModalKeydownHandler);
+      }
+    }
+  }
+
+  function errorFormHandler(errorMessage) {
+    var modalError = document.querySelector('.modal--error');
+    modalError.classList.remove('modal--hidden');
+    var modalMessage = modalError.querySelector('.modal__message');
+    modalMessage.textContent = errorMessage;
+
+    var modalСlose = modalError.querySelector('.modal__close');
+    modalСlose.addEventListener('click', function () {
+      modalError.classList.add('modal--hidden');
+    });
+
+    document.addEventListener('keydown', errorModalKeydownHandler);
+
+    function errorModalKeydownHandler(evt) {
+      if (evt.keyCode === 27) {
+        modalError.classList.add('modal--hidden');
+        document.removeEventListener('keydown', errorModalKeydownHandler);
+      }
+    }
+  }
+
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), successFormHandler, errorFormHandler);
+    document.querySelectorAll('input').forEach(function (inputElement) {
+      inputElement.value = inputElement.defaultValue;
+    });
+    evt.preventDefault();
+  });
 })();
