@@ -138,16 +138,10 @@
     var modalСlose = modalError.querySelector('.modal__close');
     modalСlose.addEventListener('click', function () {
       modalError.classList.add('modal--hidden');
-      document.removeEventListener('keydown', errorModalKeydownHandler);
+      document.removeEventListener('keydown', window.utils.modalKeydownHandler);
     });
 
-    function errorModalKeydownHandler(evt) {
-      if (evt.keyCode === 27) {
-        modalError.classList.add('modal--hidden');
-        document.removeEventListener('keydown', errorModalKeydownHandler);
-      }
-    }
-    document.addEventListener('keydown', errorModalKeydownHandler);
+    document.addEventListener('keydown', window.utils.modalKeydownHandler);
   }
 
   window.load(successHandler, errorHandler);

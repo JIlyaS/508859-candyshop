@@ -213,18 +213,17 @@
       modalSuccess.classList.add('modal--hidden');
     });
 
-    document.addEventListener('keydown', errorModalKeydownHandler);
+    document.addEventListener('keydown', successModalKeydownHandler);
 
-    function errorModalKeydownHandler(evt) {
-      if (evt.keyCode === 27) {
-        modalSuccess.classList.add('modal--hidden');
-        document.removeEventListener('keydown', errorModalKeydownHandler);
-      }
+    function successModalKeydownHandler() {
+      modalSuccess.classList.add('modal--hidden');
+      document.removeEventListener('keydown', successModalKeydownHandler);
     }
   }
 
+  var modalError = document.querySelector('.modal--error');
+
   function errorFormHandler(errorMessage) {
-    var modalError = document.querySelector('.modal--error');
     modalError.classList.remove('modal--hidden');
     var modalMessage = modalError.querySelector('.modal__message');
     modalMessage.textContent = errorMessage;
@@ -234,14 +233,7 @@
       modalError.classList.add('modal--hidden');
     });
 
-    document.addEventListener('keydown', errorModalKeydownHandler);
-
-    function errorModalKeydownHandler(evt) {
-      if (evt.keyCode === 27) {
-        modalError.classList.add('modal--hidden');
-        document.removeEventListener('keydown', errorModalKeydownHandler);
-      }
-    }
+    document.addEventListener('keydown', window.utils.modalKeydownHandler);
   }
 
   form.addEventListener('submit', function (evt) {

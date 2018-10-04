@@ -13,7 +13,7 @@
     xhr.responceType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200 && xhr.readyState === 4) {
+      if (xhr.status === 200) {
         window[CALLBACK_NAME] = function (data) {
           onLoad(data);
         };
@@ -34,7 +34,7 @@
 
     xhr.open('GET', DATA_URL, true);
 
-    xhr.send(null);
+    xhr.send();
   };
 
   // Загрузка данных на сервер
@@ -42,8 +42,8 @@
     var xhr = new XMLHttpRequest();
     xhr.responceType = 'json';
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200 && xhr.readyState === 4) {
-        onLoad();
+      if (xhr.status === 200) {
+        onLoad(xhr.response);
       } else {
         onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
