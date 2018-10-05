@@ -25,9 +25,6 @@
 
   getResultMinMax(min, max);
 
-  // sliderFillLine.style.left = sliderFillLine.offsetLeft + rangeMin.offsetWidth / 2 + 'px';
-  // sliderFillLine.style.right = (ELEMENT_WIDTH + sliderFillLine.offsetWidth - rangeMax.offsetWidth / 2) + 'px';
-
   // Координаты слайдера
   var sliderLineCoords = getCoords(sliderLine);
 

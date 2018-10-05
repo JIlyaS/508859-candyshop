@@ -7,11 +7,6 @@
   var basketCards = [];
   // Уберите у блока catalog__cards класс catalog__cards--load
   var catalogCards = document.querySelector('.catalog__cards');
-  catalogCards.classList.remove('catalog__cards--load');
-
-  // Добавлением класса visually-hidden блок catalog__load
-  var catalogLoad = document.querySelector('.catalog__load');
-  catalogLoad.classList.add('visually-hidden');
 
   // Находим шаблон, который будем копировать
   var goodElements = document.querySelector('#card').content.querySelector('.catalog__card');
@@ -25,7 +20,7 @@
     var cardTitle = goodElement.querySelector('.card__title');
     cardTitle.textContent = good.name; // Вставим название в блок
     var cardImg = goodElement.querySelector('.card__img');
-    cardImg.src = good.picture;
+    cardImg.src = 'img/cards/' + good.picture;
     var cardPrice = goodElement.querySelector('.card__price');
     cardPrice.innerHTML = good.price + '&nbsp;<span class="card__currency">₽</span><span class="card__weight">/ ' + good.weight + ' Г</span>';
 
@@ -93,37 +88,7 @@
     }
   }
 
-  // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
-  function clickBtnFavoriteHandler(evt) {
-    var cardFavotireElement = evt.currentTarget;
-    cardFavotireElement.classList.toggle('card__btn-favorite--selected');
-  }
-
-  function addElementsCatalog(length) {
-    for (var i = 0; i < length; i++) {
-      var elGood = window.data.generateGoods(i);
-      arrayGoods.push(elGood);
-    }
-  }
-
-  addElementsCatalog(window.data.CATALOG_LENGTH_GOODS);
-
-  // Показать товары в каталоге
-  function showGoods(callback, catalog) {
-    var fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < arrayGoods.length; i++) {
-      fragment.appendChild(callback(arrayGoods[i]));
-    }
-
-    catalog.appendChild(fragment);
-  }
-
-  showGoods(renderGood, catalogCards);
-
-  var mainHeaderBasket = document.querySelector('.main-header__basket');
-
-  // Добавить количество ззаказа в header
+  // Добавить количество заказа в header
   function getCountBasket(basket) {
     var basketCountOrder = 0;
     for (var m = 0; m < basket.length; m++) {
@@ -141,38 +106,51 @@
     }
   }
 
-  // Отобразить товар в корзине
-  function showBasket(basket, catalog, callback) {
-    removeBasket();
+  // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
+  function clickBtnFavoriteHandler(evt) {
+    var cardFavotireElement = evt.currentTarget;
+    cardFavotireElement.classList.toggle('card__btn-favorite--selected');
+  }
+
+  // Показать товары в каталоге
+  function successHandler(dataCards) {
+    catalogCards.classList.remove('catalog__cards--load');
+
+    arrayGoods = dataCards;
+
+    // Добавлением класса visually-hidden блок catalog__load
+    var catalogLoad = document.querySelector('.catalog__load');
+    catalogLoad.classList.add('visually-hidden');
+
     var fragment = document.createDocumentFragment();
-
-    for (var i = 0; i < basket.length; i++) {
-      fragment.appendChild(callback(basket[i]));
+    for (var i = 0; i < dataCards.length; i++) {
+      fragment.appendChild(renderGood(dataCards[i]));
     }
-
-    catalog.appendChild(fragment);
+    catalogCards.appendChild(fragment);
   }
 
-  // Очищаю корзину перед следующим рендерингом
-  function removeBasket() {
-    while (goodsCards.firstChild) {
-      goodsCards.removeChild(goodsCards.firstChild);
-    }
+  function errorHandler(errorMessage) {
+    var modalError = document.querySelector('.modal--error');
+    modalError.classList.remove('modal--hidden');
+    var modalMessage = modalError.querySelector('.modal__message');
+    modalMessage.textContent = errorMessage;
+
+    var modalСlose = modalError.querySelector('.modal__close');
+    modalСlose.addEventListener('click', function () {
+      modalError.classList.add('modal--hidden');
+      document.removeEventListener('keydown', window.utils.modalKeydownHandler);
+    });
+
+    document.addEventListener('keydown', window.utils.modalKeydownHandler);
   }
 
-  // Функция проверки - есть ли объект в массиве
-  function contains(basket, goodCard) {
-    for (var m = 0; m < basket.length; m++) {
-      if (basket[m].name === goodCard.name) {
-        return true;
-      }
-    }
-    return false;
-  }
+  window.load(successHandler, errorHandler);
 
-  var cardElements = document.querySelector('#card-order').content.querySelector('.goods_card');
+  var mainHeaderBasket = document.querySelector('.main-header__basket');
   var goodsCards = document.querySelector('.goods__cards');
   var goodsCardEmpty = document.querySelector('.goods__card-empty');
+
+  var cardElements = document.querySelector('#card-order').content.querySelector('.goods_card');
 
   // Шаблонизируем товары в корзине
   function addElementsCard(good) {
@@ -180,7 +158,7 @@
     var cardOrderTitle = cardElement.querySelector('.card-order__title');
     cardOrderTitle.textContent = good.name;
     var cardOrderImg = cardElement.querySelector('.card-order__img');
-    cardOrderImg.src = good.picture;
+    cardOrderImg.src = 'img/cards/' + good.picture;
     var cardOrderPrice = cardElement.querySelector('.card-order__price');
     cardOrderPrice.textContent = good.price + ' ₽';
     var cardOrderCount = cardElement.querySelector('.card-order__count');
@@ -230,11 +208,45 @@
 
   // Проверка, пуста ли корзина
   function isEmptyBasket() {
-
     if (basketCards.length === 0) {
       goodsCards.classList.add('goods__cards--empty');
       goodsCards.appendChild(goodsCardEmpty);
       goodsCardEmpty.classList.remove('visually-hidden');
     }
   }
+
+  // Отобразить товар в корзине
+  function showBasket(basket, catalog, callback) {
+    removeBasket();
+    var fragment = document.createDocumentFragment();
+
+    for (var i = 0; i < basket.length; i++) {
+      fragment.appendChild(callback(basket[i]));
+    }
+
+    catalog.appendChild(fragment);
+  }
+
+  // Очищаю корзину перед следующим рендерингом
+  function removeBasket() {
+    while (goodsCards.firstChild) {
+      goodsCards.removeChild(goodsCards.firstChild);
+    }
+  }
+
+  // Функция проверки - есть ли объект в массиве
+  function contains(basket, goodCard) {
+    for (var m = 0; m < basket.length; m++) {
+      if (basket[m].name === goodCard.name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Создаем скрипт загрузки данных по JSONP и выводим его в index.html
+  var loader = document.createElement('script');
+  loader.src = window.backend.DATA_URL + '?callback=' + window.backend.CALLBACK_NAME;
+  document.body.append(loader);
+
 })();

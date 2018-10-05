@@ -22,12 +22,10 @@
     if (deliverId === 'deliver__store') {
       document.querySelector('.' + deliverId).classList.remove('visually-hidden');
       deliverCourier.classList.add('visually-hidden');
-      // disabledInput(deliverCourier);
       disabledInput(deliverCourier, true);
     } else if (deliverId === 'deliver__courier') {
       document.querySelector('.' + deliverId).classList.remove('visually-hidden');
       deliverStore.classList.add('visually-hidden');
-      // disabledInput(deliverStore, 'true');
       disabledInput(deliverCourier, false);
     }
   }
@@ -63,9 +61,6 @@
     // Если результат больше 10 и кратен 10 то возвращаем истину
     return !!(result >= 10 && result % 10 === 0);
   }
-
-
-  // События
 
   var MESSAGE_ERRORS = {
     contactDataName: {
@@ -185,7 +180,6 @@
     }
   }, true);
 
-  // Автодополнение символа /
   function inputKeyupHandler(evt) {
     if (evt.keyCode !== 8) {
       if (paymentCardDate.value.length === 2) {
@@ -209,4 +203,44 @@
       paymentCardStatus.textContent = 'Одобрен';
     }
   }
+
+  function successFormHandler() {
+    var modalSuccess = document.querySelector('.modal--success');
+    modalSuccess.classList.remove('modal--hidden');
+
+    var modalСlose = modalSuccess.querySelector('.modal__close');
+    modalСlose.addEventListener('click', function () {
+      modalSuccess.classList.add('modal--hidden');
+    });
+
+    document.addEventListener('keydown', successModalKeydownHandler);
+
+    function successModalKeydownHandler() {
+      modalSuccess.classList.add('modal--hidden');
+      document.removeEventListener('keydown', successModalKeydownHandler);
+    }
+  }
+
+  var modalError = document.querySelector('.modal--error');
+
+  function errorFormHandler(errorMessage) {
+    modalError.classList.remove('modal--hidden');
+    var modalMessage = modalError.querySelector('.modal__message');
+    modalMessage.textContent = errorMessage;
+
+    var modalСlose = modalError.querySelector('.modal__close');
+    modalСlose.addEventListener('click', function () {
+      modalError.classList.add('modal--hidden');
+    });
+
+    document.addEventListener('keydown', window.utils.modalKeydownHandler);
+  }
+
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), successFormHandler, errorFormHandler);
+    document.querySelectorAll('input').forEach(function (inputElement) {
+      inputElement.value = inputElement.defaultValue;
+    });
+    evt.preventDefault();
+  });
 })();
