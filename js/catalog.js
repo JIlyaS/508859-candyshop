@@ -2,11 +2,17 @@
 
 (function () {
   // Массив товаров
-  var arrayGoods = [];
+  // var arrayGoods = [];
   // Массив товаров в корзине
   var basketCards = [];
   // Уберите у блока catalog__cards класс catalog__cards--load
   var catalogCards = document.querySelector('.catalog__cards');
+  // Добавлением класса visually-hidden блок catalog__load
+  var catalogLoad = document.querySelector('.catalog__load');
+  catalogLoad.parentNode.removeChild(catalogLoad);
+  // catalogLoad.classList.add('visually-hidden');
+  var loadData = document.querySelector('#load-data').content.querySelector('.catalog__load');
+  catalogCards.appendChild(loadData);
 
   // Находим шаблон, который будем копировать
   var goodElements = document.querySelector('#card').content.querySelector('.catalog__card');
@@ -112,21 +118,31 @@
     cardFavotireElement.classList.toggle('card__btn-favorite--selected');
   }
 
+  // Массив товаров
+  var arrayGoods = [];
   // Показать товары в каталоге
   function successHandler(dataCards) {
+    console.log(dataCards);
     catalogCards.classList.remove('catalog__cards--load');
-
+    catalogCards.removeChild(loadData);
     arrayGoods = dataCards;
+    renderCatalog(arrayGoods);
+    window.filter.updateCatalog(dataCards);
+  }
 
-    // Добавлением класса visually-hidden блок catalog__load
-    var catalogLoad = document.querySelector('.catalog__load');
-    catalogLoad.classList.add('visually-hidden');
-
+  function renderCatalog(goods) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < dataCards.length; i++) {
-      fragment.appendChild(renderGood(dataCards[i]));
+    for (var i = 0; i < goods.length; i++) {
+      fragment.appendChild(renderGood(goods[i]));
     }
     catalogCards.appendChild(fragment);
+  }
+
+  // Очищаю корзину перед следующим рендерингом
+  function cleanCatalog() {
+    while (catalogCards.firstChild) {
+      catalogCards.removeChild(catalogCards.firstChild);
+    }
   }
 
   function errorHandler(errorMessage) {
@@ -168,10 +184,10 @@
     var btnClose = cardElement.querySelector('.card-order__close');
     btnClose.addEventListener('click', btnCloseClickHandler);
 
-    var goodCards = document.querySelector('.goods__cards');
+    // var goodCards = document.querySelector('.goods__cards');
 
     function btnCloseClickHandler() {
-      deleteGood(basketCards, good, goodCards, cardElement);
+      deleteGood(basketCards, good, goodsCards, cardElement);
     }
 
     return cardElement;
@@ -248,5 +264,12 @@
   var loader = document.createElement('script');
   loader.src = window.backend.DATA_URL + '?callback=' + window.backend.CALLBACK_NAME;
   document.body.append(loader);
+
+  window.catalog = {
+    renderCatalog: renderCatalog,
+    arrayGoods: arrayGoods,
+    cleanCatalog: cleanCatalog,
+    catalogCards: catalogCards
+  };
 
 })();
