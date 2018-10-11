@@ -71,8 +71,10 @@
       el.setCustomValidity(obj.patternMismatch);
     } else if (el.validity.valueMissing) {
       el.setCustomValidity(obj.valueMissing);
-    } else if (el === paymentCardNumber && !checkLuhn(paymentCardNumber.value)) {
-      el.setCustomValidity(obj.customError);
+    } else if (el === paymentCardNumber) {
+      if (paymentCardNumber.disabled === false && !checkLuhn(paymentCardNumber.value)) {
+        el.setCustomValidity(obj.customError);
+      }
     } else {
       el.setCustomValidity('');
     }
@@ -135,13 +137,13 @@
   function selectPaymentCash() {
     paymentCardWrap.classList.add('visually-hidden');
     paymentCashWrap.classList.remove('visually-hidden');
-    disabledInput(payment, true);
+    disabledInput(paymentCardWrap, true);
   }
 
   function selectPaymentCard() {
     paymentCardWrap.classList.remove('visually-hidden');
     paymentCashWrap.classList.add('visually-hidden');
-    disabledInput(payment, false);
+    disabledInput(paymentCardWrap, false);
   }
 
   paymentCardDate.addEventListener('keyup', inputKeyupHandler);
@@ -151,12 +153,14 @@
   var paymentCardStatus = document.querySelector('.payment__card-status');
 
   function dataValiditySubmitHandler() {
-    if (paymentCardNumber.validity.valid &&
-        checkLuhn(paymentCardNumber.value) &&
-        paymentCardDate.validity.valid &&
-        paymentСardСvc.validity.valid &&
-        paymentCardholder.validity.valid) {
-      paymentCardStatus.textContent = 'Одобрен';
+    if (paymentCardNumber.disabled === false) {
+      if (paymentCardNumber.validity.valid &&
+          checkLuhn(paymentCardNumber.value) &&
+          paymentCardDate.validity.valid &&
+          paymentСardСvc.validity.valid &&
+          paymentCardholder.validity.valid) {
+        paymentCardStatus.textContent = 'Одобрен';
+      }
     }
   }
 

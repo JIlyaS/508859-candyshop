@@ -82,7 +82,8 @@
         var goodCard = Object.assign({}, good);
         // Если количество больше 0, то добавляем товар в корзину
         // Если товар уже содержится в корзине, увеличиваем количество товара
-        if (contains(basketCards, goodCard)) {
+        var isContains = contains(basketCards, goodCard);
+        if (isContains === true) {
           addGoodAmount(basketCards, goodCard);
         } else {
           goodCard.orderedAmount = 1;
@@ -200,6 +201,24 @@
     cardOrderPrice.textContent = good.price + ' ₽';
     var cardOrderCount = cardElement.querySelector('.card-order__count');
     cardOrderCount.value = good.orderedAmount;
+
+    var btnDecrease = cardElement.querySelector('.card-order__btn--decrease');
+    var btnIncrease = cardElement.querySelector('.card-order__btn--increase');
+
+    btnDecrease.addEventListener('click', decreaseCardBasket);
+    btnIncrease.addEventListener('click', increaseCardBasket);
+
+    function decreaseCardBasket() {
+      cardOrderCount.value = +cardOrderCount.value - 1;
+      // Показать количество товара в корзине
+      mainHeaderBasket.textContent = getCountBasket(basketCards);
+    }
+
+    function increaseCardBasket() {
+      cardOrderCount.value = +cardOrderCount.value + 1;
+      // Показать количество товара в корзине
+      mainHeaderBasket.textContent = getCountBasket(basketCards);
+    }
 
     // Функция удаления товара в магазине
     var btnClose = cardElement.querySelector('.card-order__close');
