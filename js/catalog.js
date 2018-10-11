@@ -112,10 +112,13 @@
     }
   }
 
+  var favorites = [];
+
   // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
   function clickBtnFavoriteHandler(evt) {
     var cardFavotireElement = evt.currentTarget;
     cardFavotireElement.classList.toggle('card__btn-favorite--selected');
+    console.log(evt.target);
   }
 
   // Массив товаров
