@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  // Массив товаров
-  // var arrayGoods = [];
   // Массив товаров в корзине
   var basketCards = [];
   // Уберите у блока catalog__cards класс catalog__cards--load
@@ -10,7 +8,6 @@
   // Добавлением класса visually-hidden блок catalog__load
   var catalogLoad = document.querySelector('.catalog__load');
   catalogLoad.parentNode.removeChild(catalogLoad);
-  // catalogLoad.classList.add('visually-hidden');
   var loadData = document.querySelector('#load-data').content.querySelector('.catalog__load');
   catalogCards.appendChild(loadData);
 
@@ -43,6 +40,14 @@
     starCount.textContent = good.rating.number;
 
     isSugar(goodElement, good);
+
+    // Показываем состав
+    var cardBtnComposition = goodElement.querySelector('.card__btn-composition');
+
+    cardBtnComposition.addEventListener('click', function () {
+      var cardComposition = goodElement.querySelector('.card__composition');
+      cardComposition.classList.toggle('card__composition--hidden');
+    });
 
     var cardBtnFavorite = goodElement.querySelector('.card__btn-favorite');
     cardBtnFavorite.addEventListener('click', clickBtnFavoriteHandler);
@@ -196,11 +201,9 @@
     var cardOrderCount = cardElement.querySelector('.card-order__count');
     cardOrderCount.value = good.orderedAmount;
 
-    //  Функция удаления товара в магазине
+    // Функция удаления товара в магазине
     var btnClose = cardElement.querySelector('.card-order__close');
     btnClose.addEventListener('click', btnCloseClickHandler);
-
-    // var goodCards = document.querySelector('.goods__cards');
 
     function btnCloseClickHandler() {
       deleteGood(basketCards, good, goodsCards, cardElement);
