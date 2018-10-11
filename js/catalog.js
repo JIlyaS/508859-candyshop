@@ -17,6 +17,9 @@
   // Находим шаблон, который будем копировать
   var goodElements = document.querySelector('#card').content.querySelector('.catalog__card');
 
+  // Избранное
+  var favorites = [];
+
   // Генерируем товар - создаем DOM-элементы и заполняем данными из массива
   function renderGood(good) {
     var goodElement = goodElements.cloneNode(true); // Клонируем товар
@@ -44,6 +47,24 @@
     var cardBtnFavorite = goodElement.querySelector('.card__btn-favorite');
     cardBtnFavorite.addEventListener('click', clickBtnFavoriteHandler);
 
+    // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
+    function clickBtnFavoriteHandler(evt) {
+      var cardFavotireElement = evt.currentTarget;
+      cardFavotireElement.classList.toggle('card__btn-favorite--selected');
+      if (cardFavotireElement.classList.contains('card__btn-favorite--selected')) {
+        good.favorite = true;
+        favorites.push(good);
+        window.filter.generateFilterCount();
+      } else {
+        delete good.favorite;
+        favorites = [];
+      }
+    }
+
+    if (good.favorite) {
+      cardBtnFavorite.classList.add('card__btn-favorite--selected');
+    }
+    // Кнопка - Добавить товар в корзину
     var cardBtn = goodElement.querySelector('.card__btn');
     cardBtn.addEventListener('click', btnCardClickHandler);
 
@@ -67,7 +88,9 @@
         mainHeaderBasket.textContent = getCountBasket(basketCards);
         // Уменьшить количество товара на единицу при добавлении товара
         good.amount--;
-
+        // При уменьшении количества генерируем показатель товара
+        window.filter.generateFilterCount();
+        window.filter.generateFilters();
         showBasket(basketCards, goodsCards, addElementsCard);
       }
     }
@@ -112,20 +135,10 @@
     }
   }
 
-  var favorites = [];
-
-  // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
-  function clickBtnFavoriteHandler(evt) {
-    var cardFavotireElement = evt.currentTarget;
-    cardFavotireElement.classList.toggle('card__btn-favorite--selected');
-    console.log(evt.target);
-  }
-
   // Массив товаров
   var arrayGoods = [];
   // Показать товары в каталоге
   function successHandler(dataCards) {
-    console.log(dataCards);
     catalogCards.classList.remove('catalog__cards--load');
     catalogCards.removeChild(loadData);
     arrayGoods = dataCards;
@@ -272,7 +285,8 @@
     renderCatalog: renderCatalog,
     arrayGoods: arrayGoods,
     cleanCatalog: cleanCatalog,
-    catalogCards: catalogCards
+    catalogCards: catalogCards,
+    favorites: favorites
   };
 
 })();

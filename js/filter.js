@@ -8,19 +8,30 @@
     kinds: [],
     nutritionFacts: {},
     prices: [],
-    sorts: []
+    sorts: ''
   };
-
+  // Элементы фильтров по категориям
   var catalogFilter = document.querySelector('.catalog__filter');
   var filterForIcecream = catalogFilter.querySelector('#filter-icecream');
   var filterSoda = catalogFilter.querySelector('#filter-soda');
   var filterGum = catalogFilter.querySelector('#filter-gum');
   var filterMarmalade = catalogFilter.querySelector('#filter-marmalade');
   var filterMarshmallows = catalogFilter.querySelector('#filter-marshmallows');
-
+  // Элементы фильтров по составу
   var filterSugarFree = document.querySelector('#filter-sugar-free');
   var filterVegetarian = document.querySelector('#filter-vegetarian');
   var filterGlutenFree = document.querySelector('#filter-gluten-free');
+
+  // Избранное
+  var filterFavorite = document.querySelector('#filter-favorite');
+  // В наличии
+  var filterАvailability = document.querySelector('#filter-availability');
+
+  // Сортировка
+  var filterPopular = document.querySelector('#filter-popular');
+  var filterExpencive = document.querySelector('#filter-expensive');
+  var filterCheep = document.querySelector('#filter-cheep');
+  var filterRating = document.querySelector('#filter-rating');
 
   // Минимальная цена
   var priceMin = document.querySelector('.range__price--min');
@@ -36,7 +47,8 @@
   var rangeMax = document.querySelector('.range__btn--right');
   var min = window.data.MIN;
   var max = window.data.MAX;
-  // Показать всё
+
+  // Кнопка "Показать всё"
   var showAll = document.querySelector('.catalog__submit');
 
   // Фильтры категорий товара
@@ -55,7 +67,12 @@
     generateFilterNutritionFacts(filterVegetarian);
     generateFilterNutritionFacts(filterGlutenFree);
     generateFilterPrice();
-    generateFavorites();
+    generateFilterFavorites(filterFavorite);
+    generateFilterInStocks(filterАvailability);
+    generateSort(filterPopular);
+    generateSort(filterExpencive);
+    generateSort(filterCheep);
+    generateSort(filterRating);
     generateShowAll(showAll);
   }
 
@@ -70,6 +87,8 @@
     var filterCountVegetarian = document.querySelector('label[for="filter-vegetarian"] + .input-btn__item-count');
     var filterCountGlutenFree = document.querySelector('label[for="filter-gluten-free"] + .input-btn__item-count');
     var filterCountPrice = document.querySelector('.range__price-count > .range__count');
+    var filterCountFavorite = document.querySelector('label[for="filter-favorite"] + .input-btn__item-count');
+    var filterCountAvailability = document.querySelector('label[for="filter-availability"] + .input-btn__item-count');
     var countIcecream = 0;
     var countSoda = 0;
     var countGum = 0;
@@ -79,6 +98,8 @@
     var countVegetarian = 0;
     var countGlutenFree = 0;
     var countPrice = 0;
+    var countFavorite = 0;
+    var countAvailability = 0;
 
     for (var i = 0; i < arrFilter.length; i++) {
       if (arrFilter[i].kind === 'Мороженое') {
@@ -105,6 +126,9 @@
       if (arrFilter[i].nutritionFacts.gluten === false) {
         countGlutenFree += 1;
       }
+      if (arrFilter[i].amount > 0) {
+        countAvailability += 1;
+      }
       if (arrFilterSort.prices.length !== 0) {
         if (arrFilter[i].price >= arrFilterSort.prices[window.data.MIN_INDEX] && arrFilter[i].price <= arrFilterSort.prices[window.data.MAX_INDEX]) {
           countPrice += 1;
@@ -114,6 +138,10 @@
           countPrice += 1;
         }
       }
+    }
+
+    for (var j = 0; j < window.catalog.favorites.length; j++) {
+      countFavorite += 1;
     }
 
     filterCountIcecream.textContent = '(' + countIcecream + ')';
@@ -126,6 +154,8 @@
     filterCountGlutenFree.textContent = '(' + countGlutenFree + ')';
     filterCountGlutenFree.textContent = '(' + countGlutenFree + ')';
     filterCountPrice.textContent = '(' + countPrice + ')';
+    filterCountFavorite.textContent = '(' + countFavorite + ')';
+    filterCountAvailability.textContent = '(' + countAvailability + ')';
   }
   // Выводим товары по фильтрам
   function generateFilters() {
@@ -142,20 +172,23 @@
       var emptyFilterPrices = arrFilterSort.prices.length === 0;
       var noEmptyFilterPrices = !emptyFilterPrices && (it.price >= arrFilterSort.prices[window.data.MIN_INDEX] && it.price <= arrFilterSort.prices[window.data.MAX_INDEX]);
 
-      var emptyFilterSort = arrFilterSort.sort.length === 0;
+      var emptyFilterSort = arrFilterSort.sorts.length === 0;
       var noEmptyFilterSort = !emptyFilterSort;
 
-      if ((emptyFilterKinds || noEmptyFilterKinds) && (emptyFilterFacts || noEmptyFilterFacts) && (emptyFilterPrices || noEmptyFilterPrices)) {
+      if ((emptyFilterKinds || noEmptyFilterKinds) &&
+          (emptyFilterFacts || noEmptyFilterFacts) &&
+          (emptyFilterPrices || noEmptyFilterPrices) &&
+          (emptyFilterSort || noEmptyFilterSort)) {
         arrayFilterGoods.push(it);
       }
     });
+    sortElements(arrayFilterGoods);
     if (arrayFilterGoods.length === 0) {
       var blockEmptyFilter = document.querySelector('#empty-filters').content.querySelector('.catalog__empty-filter');
       var emptyFilter = blockEmptyFilter.cloneNode(true);
       window.catalog.catalogCards.appendChild(emptyFilter);
     }
     window.catalog.renderCatalog(arrayFilterGoods);
-    console.log(arrayFilterGoods);
   }
   // Функция - показать всё
   function generateShowAll(element) {
@@ -169,11 +202,13 @@
       window.catalog.renderCatalog(arrFilter);
     });
   }
+
   // Очищаем все фильтры в объекте фильтров
   function resetAllFilters() {
     arrFilterSort.kinds = [];
     arrFilterSort.nutritionFacts = {};
     arrFilterSort.prices = [];
+    arrFilterSort.sort = '';
   }
 
   // Убираем галочки со всех чекбоксов
@@ -194,10 +229,14 @@
     setResultMinMax(min, max);
   }
 
-  function generateFavorites() {
-
+  function getFunctionsForFilters(element) {
+    window.catalog.cleanCatalog();
+    resetAllFilters();
+    resetCheckbox();
+    element.checked = 'true';
+    initSliderCoordinates();
+    generateFilterCount();
   }
-
 
   function checkNutritionFacts(goodFact) {
     var isSugarFactActive = arrFilterSort.nutritionFacts.sugar === false;
@@ -301,20 +340,6 @@
       arrFilterSort.prices[window.data.MIN_INDEX] = minPrice;
       arrFilterSort.prices[window.data.MAX_INDEX] = maxPrice;
     }
-
-    // Подсчёт минимального значения цены в массиве объектов
-    // function arrayMinPrice() {
-    //   return arrFilter.reduce(function (prevElement, currElement) {
-    //     return (prevElement.price < currElement.price ? prevElement : currElement);
-    //   });
-    // }
-
-    // Подсчёт минимального значения цены в массиве объектов
-    // function arrayMaxPrice() {
-    //   return arrFilter.reduce(function (prevElement, currElement) {
-    //     return (prevElement.price > currElement.price ? prevElement : currElement);
-    //   });
-    // }
 
     setResultMinMax(min, max);
 
@@ -422,35 +447,117 @@
     }
   }
 
+  // Функция - фильтрация "Избранное"
+  function generateFilterFavorites(element) {
+    element.addEventListener('click', function () {
+      if (element.checked) {
+        getFunctionsForFilters(element);
+        if (window.catalog.favorites.length === 0) {
+          var blockEmptyFilter = document.querySelector('#empty-filters').content.querySelector('.catalog__empty-filter');
+          var emptyFilter = blockEmptyFilter.cloneNode(true);
+          window.catalog.catalogCards.appendChild(emptyFilter);
+        } else {
+          window.catalog.renderCatalog(window.catalog.favorites);
+        }
+      } else {
+        window.catalog.cleanCatalog();
+        resetCheckbox();
+        window.catalog.renderCatalog(arrFilter);
+      }
+    });
+  }
+
+  // Функция - товар в наличии
+  function generateFilterInStocks(element) {
+    element.addEventListener('click', function () {
+      if (element.checked) {
+        getFunctionsForFilters(element);
+        var arrFilterInStocks = arrFilter.filter(function (it) {
+          return it.amount !== 0;
+        });
+        window.catalog.renderCatalog(arrFilterInStocks);
+      } else {
+        window.catalog.cleanCatalog();
+        resetCheckbox();
+        window.catalog.renderCatalog(arrFilter);
+      }
+    });
+  }
+
+  // Функция создания события сортировки
+  function generateSort(element) {
+    element.addEventListener('click', function (evt) {
+      if (element.checked) {
+        switch (evt.target.value) {
+          case 'popular':
+            arrFilterSort.sort = 'Сначала популярные';
+            break;
+          case 'expensive':
+            arrFilterSort.sort = 'Сначала дорогие';
+            break;
+          case 'cheep':
+            arrFilterSort.sort = 'Сначала дешёвые';
+            break;
+          case 'rating':
+            arrFilterSort.sort = 'По рейтингу';
+            break;
+        }
+      } else {
+        arrFilterSort.sort = '';
+      }
+      window.catalog.cleanCatalog();
+      generateFilters();
+    });
+  }
+
+  // Сортировка
+  function sortElements(elements) {
+    switch (arrFilterSort.sort) {
+      case 'Сначала дорогие':
+        elements.sort(function (first, second) {
+          if (first.price < second.price) {
+            return 1;
+          } else if (first.price > second.price) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        break;
+      case 'Сначала дешёвые':
+        elements.sort(function (first, second) {
+          if (first.price > second.price) {
+            return 1;
+          } else if (first.price < second.price) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+        break;
+      case 'По рейтингу':
+        elements.sort(function (first, second) {
+          if (first.rating.value > second.rating.value) {
+            return -1;
+          } else if (first.rating.value < second.rating.value) {
+            return 1;
+          } else if (first.rating.value === second.rating.value && first.rating.number > second.rating.number) {
+            return -1;
+          } else if (first.rating.value === second.rating.value && first.rating.number < second.rating.number) {
+            return 1;
+          }
+          return 0;
+        });
+        break;
+      case 'Сначала популярные':
+        return elements;
+    }
+    return 0;
+  }
+
   window.filter = {
-    updateCatalog: updateCatalog
+    updateCatalog: updateCatalog,
+    generateFilters: generateFilters,
+    generateFilterCount: generateFilterCount
   };
 })();
-
-// Фильтрация по категориям
-// if (arrFilterSort.kind.length !== 0) {
-//   arrFilterSort.kind.forEach(function (it) {
-//     goods = arrFilter.filter(function (iter) {
-//       return iter.kind === it;
-//     });
-//     goods.forEach(function (iteration) {
-//       array.unshift(iteration);
-//     });
-//   });
-//   window.catalog.renderCatalog(array);
-// } else {
-//   var blockEmptyFilter = document.querySelector('#empty-filters').content.querySelector('.catalog__empty-filter');
-//   var emptyFilter = blockEmptyFilter.cloneNode(true);
-//   window.catalog.catalogCards.appendChild(emptyFilter);
-// }
-// Фильтрация по составу
-// if (Object.keys(arrFilterSort.nutritionFacts).length !== 0) {
-//   Object.keys(arrFilterSort.nutritionFacts).forEach(function (it) {
-//     goods = arrFilter.filter(function (iter) {
-//       return iter.nutritionFacts[it] === arrFilterSort.nutritionFacts[it];
-//     });
-//     goods.forEach(function (iteration) {
-//       array.unshift(iteration);
-//     });
-//   });
-// }
