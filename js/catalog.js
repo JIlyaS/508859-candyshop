@@ -1,15 +1,21 @@
 'use strict';
 
 (function () {
-  // Массив товаров
-  var arrayGoods = [];
   // Массив товаров в корзине
   var basketCards = [];
   // Уберите у блока catalog__cards класс catalog__cards--load
   var catalogCards = document.querySelector('.catalog__cards');
+  // Добавлением класса visually-hidden блок catalog__load
+  var catalogLoad = document.querySelector('.catalog__load');
+  catalogLoad.parentNode.removeChild(catalogLoad);
+  var loadData = document.querySelector('#load-data').content.querySelector('.catalog__load');
+  catalogCards.appendChild(loadData);
 
   // Находим шаблон, который будем копировать
   var goodElements = document.querySelector('#card').content.querySelector('.catalog__card');
+
+  // Избранное
+  var favorites = [];
 
   // Генерируем товар - создаем DOM-элементы и заполняем данными из массива
   function renderGood(good) {
@@ -35,9 +41,35 @@
 
     isSugar(goodElement, good);
 
+    // Показываем состав
+    var cardBtnComposition = goodElement.querySelector('.card__btn-composition');
+
+    cardBtnComposition.addEventListener('click', function () {
+      var cardComposition = goodElement.querySelector('.card__composition');
+      cardComposition.classList.toggle('card__composition--hidden');
+    });
+
     var cardBtnFavorite = goodElement.querySelector('.card__btn-favorite');
     cardBtnFavorite.addEventListener('click', clickBtnFavoriteHandler);
 
+    // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
+    function clickBtnFavoriteHandler(evt) {
+      var cardFavotireElement = evt.currentTarget;
+      cardFavotireElement.classList.toggle('card__btn-favorite--selected');
+      if (cardFavotireElement.classList.contains('card__btn-favorite--selected')) {
+        good.favorite = true;
+        favorites.push(good);
+        window.filter.generateFilterCount();
+      } else {
+        delete good.favorite;
+        favorites = [];
+      }
+    }
+
+    if (good.favorite) {
+      cardBtnFavorite.classList.add('card__btn-favorite--selected');
+    }
+    // Кнопка - Добавить товар в корзину
     var cardBtn = goodElement.querySelector('.card__btn');
     cardBtn.addEventListener('click', btnCardClickHandler);
 
@@ -50,7 +82,8 @@
         var goodCard = Object.assign({}, good);
         // Если количество больше 0, то добавляем товар в корзину
         // Если товар уже содержится в корзине, увеличиваем количество товара
-        if (contains(basketCards, goodCard)) {
+        var isContains = contains(basketCards, goodCard);
+        if (isContains === true) {
           addGoodAmount(basketCards, goodCard);
         } else {
           goodCard.orderedAmount = 1;
@@ -61,7 +94,9 @@
         mainHeaderBasket.textContent = getCountBasket(basketCards);
         // Уменьшить количество товара на единицу при добавлении товара
         good.amount--;
-
+        // При уменьшении количества генерируем показатель товара
+        window.filter.generateFilterCount();
+        window.filter.generateFilters();
         showBasket(basketCards, goodsCards, addElementsCard);
       }
     }
@@ -106,27 +141,30 @@
     }
   }
 
-  // Показываем и убираем класс при нажатие на кнопку "Добавить в Избранное"
-  function clickBtnFavoriteHandler(evt) {
-    var cardFavotireElement = evt.currentTarget;
-    cardFavotireElement.classList.toggle('card__btn-favorite--selected');
-  }
-
+  // Массив товаров
+  var arrayGoods = [];
   // Показать товары в каталоге
   function successHandler(dataCards) {
     catalogCards.classList.remove('catalog__cards--load');
-
+    catalogCards.removeChild(loadData);
     arrayGoods = dataCards;
+    renderCatalog(arrayGoods);
+    window.filter.updateCatalog(dataCards);
+  }
 
-    // Добавлением класса visually-hidden блок catalog__load
-    var catalogLoad = document.querySelector('.catalog__load');
-    catalogLoad.classList.add('visually-hidden');
-
+  function renderCatalog(goods) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < dataCards.length; i++) {
-      fragment.appendChild(renderGood(dataCards[i]));
+    for (var i = 0; i < goods.length; i++) {
+      fragment.appendChild(renderGood(goods[i]));
     }
     catalogCards.appendChild(fragment);
+  }
+
+  // Очищаю корзину перед следующим рендерингом
+  function cleanCatalog() {
+    while (catalogCards.firstChild) {
+      catalogCards.removeChild(catalogCards.firstChild);
+    }
   }
 
   function errorHandler(errorMessage) {
@@ -164,14 +202,30 @@
     var cardOrderCount = cardElement.querySelector('.card-order__count');
     cardOrderCount.value = good.orderedAmount;
 
-    //  Функция удаления товара в магазине
+    var btnDecrease = cardElement.querySelector('.card-order__btn--decrease');
+    var btnIncrease = cardElement.querySelector('.card-order__btn--increase');
+
+    btnDecrease.addEventListener('click', decreaseCardBasket);
+    btnIncrease.addEventListener('click', increaseCardBasket);
+
+    function decreaseCardBasket() {
+      cardOrderCount.value = +cardOrderCount.value - 1;
+      // Показать количество товара в корзине
+      mainHeaderBasket.textContent = getCountBasket(basketCards);
+    }
+
+    function increaseCardBasket() {
+      cardOrderCount.value = +cardOrderCount.value + 1;
+      // Показать количество товара в корзине
+      mainHeaderBasket.textContent = getCountBasket(basketCards);
+    }
+
+    // Функция удаления товара в магазине
     var btnClose = cardElement.querySelector('.card-order__close');
     btnClose.addEventListener('click', btnCloseClickHandler);
 
-    var goodCards = document.querySelector('.goods__cards');
-
     function btnCloseClickHandler() {
-      deleteGood(basketCards, good, goodCards, cardElement);
+      deleteGood(basketCards, good, goodsCards, cardElement);
     }
 
     return cardElement;
@@ -248,5 +302,13 @@
   var loader = document.createElement('script');
   loader.src = window.backend.DATA_URL + '?callback=' + window.backend.CALLBACK_NAME;
   document.body.append(loader);
+
+  window.catalog = {
+    renderCatalog: renderCatalog,
+    arrayGoods: arrayGoods,
+    cleanCatalog: cleanCatalog,
+    catalogCards: catalogCards,
+    favorites: favorites
+  };
 
 })();
