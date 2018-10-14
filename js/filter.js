@@ -2,7 +2,7 @@
 
 (function () {
   // Массив с результатами фильтрации и сортировки
-  var arrFilter;
+  var arrFilters;
   // Объект с сортировками
   var arrFilterSort = {
     kinds: [],
@@ -54,9 +54,9 @@
   // Фильтры категорий товара
   function updateCatalog(goods) {
 
-    arrFilter = goods.slice(0);
+    arrFilters = goods.slice(0);
 
-    generateFilterCount();
+    generateFiltCount();
     // Добавить событие по категориям товара
     generateFilterKind(filterForIcecream);
     generateFilterKind(filterSoda);
@@ -77,7 +77,7 @@
   }
 
   // Показать количество товара подходящими по фильтрацию
-  function generateFilterCount() {
+  function generateFiltCount() {
     var filterCountIcecream = document.querySelector('label[for="filter-icecream"] + .input-btn__item-count');
     var filterCountSoda = document.querySelector('label[for="filter-soda"] + .input-btn__item-count');
     var filterCountGum = document.querySelector('label[for="filter-gum"] + .input-btn__item-count');
@@ -101,40 +101,40 @@
     var countFavorite = 0;
     var countAvailability = 0;
 
-    for (var i = 0; i < arrFilter.length; i++) {
-      if (arrFilter[i].kind === 'Мороженое') {
+    for (var i = 0; i < arrFilters.length; i++) {
+      if (arrFilters[i].kind === 'Мороженое') {
         countIcecream += 1;
       }
-      if (arrFilter[i].kind === 'Газировка') {
+      if (arrFilters[i].kind === 'Газировка') {
         countSoda += 1;
       }
-      if (arrFilter[i].kind === 'Жевательная резинка') {
+      if (arrFilters[i].kind === 'Жевательная резинка') {
         countGum += 1;
       }
-      if (arrFilter[i].kind === 'Мармелад') {
+      if (arrFilters[i].kind === 'Мармелад') {
         countMarmalade += 1;
       }
-      if (arrFilter[i].kind === 'Зефир') {
+      if (arrFilters[i].kind === 'Зефир') {
         countMarshmallows += 1;
       }
-      if (arrFilter[i].nutritionFacts.sugar === false) {
+      if (arrFilters[i].nutritionFacts.sugar === false) {
         countSugarFree += 1;
       }
-      if (arrFilter[i].nutritionFacts.vegetarian === true) {
+      if (arrFilters[i].nutritionFacts.vegetarian === true) {
         countVegetarian += 1;
       }
-      if (arrFilter[i].nutritionFacts.gluten === false) {
+      if (arrFilters[i].nutritionFacts.gluten === false) {
         countGlutenFree += 1;
       }
-      if (arrFilter[i].amount > 0) {
+      if (arrFilters[i].amount > 0) {
         countAvailability += 1;
       }
       if (arrFilterSort.prices.length !== 0) {
-        if (arrFilter[i].price >= arrFilterSort.prices[window.data.MIN_INDEX] && arrFilter[i].price <= arrFilterSort.prices[window.data.MAX_INDEX]) {
+        if (arrFilters[i].price >= arrFilterSort.prices[window.data.MIN_INDEX] && arrFilters[i].price <= arrFilterSort.prices[window.data.MAX_INDEX]) {
           countPrice += 1;
         }
       } else {
-        if (arrFilter[i].price >= window.data.MIN && arrFilter[i].price <= window.data.MAX) {
+        if (arrFilters[i].price >= window.data.MIN && arrFilters[i].price <= window.data.MAX) {
           countPrice += 1;
         }
       }
@@ -158,11 +158,11 @@
     filterCountAvailability.textContent = '(' + countAvailability + ')';
   }
   // Выводим товары по фильтрам
-  function generateFilters() {
-    window.catalog.cleanCatalog();
+  function generateFiltElements() {
+    window.catalog.cleanAllCards();
     var arrayFilterGoods = [];
     // Один раз проходим по массиву объектов продуктов
-    arrFilter.forEach(function (it) {
+    arrFilters.forEach(function (it) {
       var emptyFilterKinds = arrFilterSort.kinds.length === 0;
       var noEmptyFilterKinds = !emptyFilterKinds && arrFilterSort.kinds.indexOf(it.kind) !== -1;
 
@@ -186,20 +186,20 @@
     if (arrayFilterGoods.length === 0) {
       var blockEmptyFilter = document.querySelector('#empty-filters').content.querySelector('.catalog__empty-filter');
       var emptyFilter = blockEmptyFilter.cloneNode(true);
-      window.catalog.catalogCards.appendChild(emptyFilter);
+      window.catalog.cardLists.appendChild(emptyFilter);
     }
-    window.catalog.renderCatalog(arrayFilterGoods);
+    window.catalog.renderCards(arrayFilterGoods);
   }
   // Функция - показать всё
   function generateShowAll(element) {
     element.addEventListener('click', function (evt) {
       evt.preventDefault();
-      window.catalog.cleanCatalog();
+      window.catalog.cleanAllCards();
       resetAllFilters();
       resetCheckbox();
       initSliderCoordinates();
-      generateFilterCount();
-      window.catalog.renderCatalog(arrFilter);
+      generateFiltCount();
+      window.catalog.renderCards(arrFilters);
     });
   }
 
@@ -230,12 +230,12 @@
   }
 
   function getFunctionsForFilters(element) {
-    window.catalog.cleanCatalog();
+    window.catalog.cleanAllCards();
     resetAllFilters();
     resetCheckbox();
     element.checked = 'true';
     initSliderCoordinates();
-    generateFilterCount();
+    generateFiltCount();
   }
 
   function checkNutritionFacts(goodFact) {
@@ -291,8 +291,8 @@
             break;
         }
       }
-      window.catalog.cleanCatalog();
-      generateFilters();
+      window.catalog.cleanAllCards();
+      generateFiltElements();
     });
   }
 
@@ -323,8 +323,8 @@
             break;
         }
       }
-      window.catalog.cleanCatalog();
-      generateFilters();
+      window.catalog.cleanAllCards();
+      generateFiltElements();
     });
   }
 
@@ -370,8 +370,8 @@
         document.removeEventListener('mousemove', rangeMinMouseMoveHandler);
         document.removeEventListener('mouseup', rangeMinMouseUpHandler);
 
-        generateFilters();
-        generateFilterCount();
+        generateFiltElements();
+        generateFiltCount();
       }
 
       return false;
@@ -414,8 +414,8 @@
         document.removeEventListener('mousemove', rangeMaxMouseMoveHandler);
         document.removeEventListener('mouseup', rangeMaxMouseUpHandler);
 
-        generateFilters();
-        generateFilterCount();
+        generateFiltElements();
+        generateFiltCount();
       }
 
       return false;
@@ -455,14 +455,14 @@
         if (window.catalog.favorites.length === 0) {
           var blockEmptyFilter = document.querySelector('#empty-filters').content.querySelector('.catalog__empty-filter');
           var emptyFilter = blockEmptyFilter.cloneNode(true);
-          window.catalog.catalogCards.appendChild(emptyFilter);
+          window.catalog.cardLists.appendChild(emptyFilter);
         } else {
-          window.catalog.renderCatalog(window.catalog.favorites);
+          window.catalog.renderCards(window.catalog.favorites);
         }
       } else {
-        window.catalog.cleanCatalog();
+        window.catalog.cleanAllCards();
         resetCheckbox();
-        window.catalog.renderCatalog(arrFilter);
+        window.catalog.renderCards(arrFilters);
       }
     });
   }
@@ -472,14 +472,14 @@
     element.addEventListener('click', function () {
       if (element.checked) {
         getFunctionsForFilters(element);
-        var arrFilterInStocks = arrFilter.filter(function (it) {
+        var arrFilterInStocks = arrFilters.filter(function (it) {
           return it.amount !== 0;
         });
-        window.catalog.renderCatalog(arrFilterInStocks);
+        window.catalog.renderCards(arrFilterInStocks);
       } else {
-        window.catalog.cleanCatalog();
+        window.catalog.cleanAllCards();
         resetCheckbox();
-        window.catalog.renderCatalog(arrFilter);
+        window.catalog.renderCards(arrFilters);
       }
     });
   }
@@ -505,8 +505,8 @@
       } else {
         arrFilterSort.sort = '';
       }
-      window.catalog.cleanCatalog();
-      generateFilters();
+      window.catalog.cleanAllCards();
+      generateFiltElements();
     });
   }
 
@@ -557,7 +557,7 @@
 
   window.filter = {
     updateCatalog: updateCatalog,
-    generateFilters: generateFilters,
-    generateFilterCount: generateFilterCount
+    generateFiltElements: generateFiltElements,
+    generateFiltCount: generateFiltCount
   };
 })();

@@ -632,6 +632,7 @@ body {
   font-weight: bold;
   text-decoration: none;
   background-color: #ffdd21;
+  cursor: default;
 }
 .card--in-stock .card__btn:hover {
   background-color: #82da03;
@@ -1355,4 +1356,3 @@ body {
 .modal__message {
   padding-bottom: 0;
 }
-
