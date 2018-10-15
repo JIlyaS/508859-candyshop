@@ -11,5 +11,4 @@
       storeMapImg.alt = window.data.DELIVERY_MAP_NAMES[evt.target.innerText];
     }
   }
-
 })();
