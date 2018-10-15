@@ -32,9 +32,15 @@
 
   // Заблокирвовать input у скрытых полей формы
   function disabledInput(el, bool) {
-    var allInputBlock = el.querySelectorAll('input');
-    for (var k = 0; k < allInputBlock.length; k++) {
-      allInputBlock[k].disabled = bool;
+    // Для полей input
+    var blockAllInputs = el.querySelectorAll('input');
+    for (var k = 0; k < blockAllInputs.length; k++) {
+      blockAllInputs[k].disabled = bool;
+    }
+
+    var blockAllTextAreas = el.querySelectorAll('textarea');
+    for (var l = 0; l < blockAllTextAreas.length; l++) {
+      blockAllTextAreas[l].disabled = bool;
     }
   }
 
@@ -201,6 +207,23 @@
     document.querySelectorAll('input').forEach(function (inputElement) {
       inputElement.value = inputElement.defaultValue;
     });
+
+    window.catalog.mainHeaderBasket.textContent = 0;
+    window.catalog.removeBasket();
+    window.catalog.checkEmptyHeaderBasket();
+
+    window.catalog.clearBasket();
+    window.catalog.checkEmptyBasket();
     evt.preventDefault();
   });
+
+  window.order = {
+    disabledInput: disabledInput,
+    paymentCash: paymentCash,
+    paymentCashWrap: paymentCashWrap,
+    paymentCard: paymentCard,
+    paymentCardWrap: paymentCardWrap,
+    deliverCourier: deliverCourier,
+    deliverStore: deliverStore
+  };
 })();

@@ -14,6 +14,23 @@
   var MAX_INDEX = 1;
   var ELEMENT_WIDTH = 245;
   var CATALOG_LENGTH_GOODS = 26;
+  var UNIT_GOODS = 1;
+
+  var DELIVERY_MAP_NAMES = {
+    'Академическая': 'academicheskaya',
+    'Чернышевская': 'chernishevskaya',
+    'Фрунзенская': 'frunzenskaya',
+    'Петроградская': 'petrogradskaya',
+    'Пролетарская': 'proletarskaya',
+    'Проспект Просвещения': 'prosvesheniya',
+    'Черная речка': 'rechka',
+    'Технологический институт': 'tehinstitute',
+    'Василеостровская': 'vasileostrovskaya',
+    'Площадь Восстания': 'vostaniya'
+  };
+
+  var PATH_PICTURES = 'img/map/';
+  var EXTENDS = '.jpg';
 
   var MESSAGE_ERRORS = {
     contactDataName: {
@@ -87,7 +104,11 @@
     ELEMENT_WIDTH: ELEMENT_WIDTH,
     MIN_INDEX: MIN_INDEX,
     MAX_INDEX: MAX_INDEX,
-    MESSAGE_ERRORS: MESSAGE_ERRORS
+    MESSAGE_ERRORS: MESSAGE_ERRORS,
+    UNIT_GOODS: UNIT_GOODS,
+    DELIVERY_MAP_NAMES: DELIVERY_MAP_NAMES,
+    PATH_PICTURES: PATH_PICTURES,
+    EXTENDS: EXTENDS
   };
 
 })();
