@@ -117,19 +117,19 @@
       if (arrFilters[i].kind === 'Зефир') {
         countMarshmallows += 1;
       }
-      if (arrFilters[i].nutritionFacts.sugar === false) {
+      if (!arrFilters[i].nutritionFacts.sugar) {
         countSugarFree += 1;
       }
-      if (arrFilters[i].nutritionFacts.vegetarian === true) {
+      if (arrFilters[i].nutritionFacts.vegetarian) {
         countVegetarian += 1;
       }
-      if (arrFilters[i].nutritionFacts.gluten === false) {
+      if (!arrFilters[i].nutritionFacts.gluten) {
         countGlutenFree += 1;
       }
       if (arrFilters[i].amount > 0) {
         countAvailability += 1;
       }
-      if (arrFilterSort.prices.length !== 0) {
+      if (arrFilterSort.prices.length) {
         if (arrFilters[i].price >= arrFilterSort.prices[window.data.MIN_INDEX] && arrFilters[i].price <= arrFilterSort.prices[window.data.MAX_INDEX]) {
           countPrice += 1;
         }
@@ -452,7 +452,7 @@
     element.addEventListener('click', function () {
       if (element.checked) {
         getFunctionsForFilters(element);
-        if (window.catalog.favorites.length === 0) {
+        if (!window.catalog.favorites.length) {
           var blockEmptyFilter = document.querySelector('#empty-filters').content.querySelector('.catalog__empty-filter');
           var emptyFilter = blockEmptyFilter.cloneNode(true);
           window.catalog.cardLists.appendChild(emptyFilter);

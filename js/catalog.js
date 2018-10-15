@@ -308,7 +308,7 @@
   // Проверка, пуста ли корзина
   function checkEmptyBasket() {
     var buySubmitBtn = document.querySelector('.buy__submit-btn');
-    if (basketCards.length === 0) {
+    if (!basketCards.length) {
       goodsCards.classList.add('goods__cards--empty');
       goodsCards.appendChild(goodsCardEmpty);
       goodsCardEmpty.classList.remove('visually-hidden');
