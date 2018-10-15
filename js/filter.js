@@ -56,7 +56,7 @@
 
     arrFilters = goods.slice(0);
 
-    generateFiltCount();
+    generateCountGoods();
     // Добавить событие по категориям товара
     generateFilterKind(filterForIcecream);
     generateFilterKind(filterSoda);
@@ -77,7 +77,7 @@
   }
 
   // Показать количество товара подходящими по фильтрацию
-  function generateFiltCount() {
+  function generateCountGoods() {
     var filterCountIcecream = document.querySelector('label[for="filter-icecream"] + .input-btn__item-count');
     var filterCountSoda = document.querySelector('label[for="filter-soda"] + .input-btn__item-count');
     var filterCountGum = document.querySelector('label[for="filter-gum"] + .input-btn__item-count');
@@ -158,7 +158,7 @@
     filterCountAvailability.textContent = '(' + countAvailability + ')';
   }
   // Выводим товары по фильтрам
-  function generateFiltElements() {
+  function generateGoods() {
     window.catalog.cleanAllCards();
     var arrayFilterGoods = [];
     // Один раз проходим по массиву объектов продуктов
@@ -198,7 +198,7 @@
       resetAllFilters();
       resetCheckbox();
       initSliderCoordinates();
-      generateFiltCount();
+      generateCountGoods();
       window.catalog.renderCards(arrFilters);
     });
   }
@@ -235,7 +235,7 @@
     resetCheckbox();
     element.checked = 'true';
     initSliderCoordinates();
-    generateFiltCount();
+    generateCountGoods();
   }
 
   function checkNutritionFacts(goodFact) {
@@ -292,7 +292,7 @@
         }
       }
       window.catalog.cleanAllCards();
-      generateFiltElements();
+      generateGoods();
     });
   }
 
@@ -324,7 +324,7 @@
         }
       }
       window.catalog.cleanAllCards();
-      generateFiltElements();
+      generateGoods();
     });
   }
 
@@ -370,8 +370,8 @@
         document.removeEventListener('mousemove', rangeMinMouseMoveHandler);
         document.removeEventListener('mouseup', rangeMinMouseUpHandler);
 
-        generateFiltElements();
-        generateFiltCount();
+        generateGoods();
+        generateCountGoods();
       }
 
       return false;
@@ -414,8 +414,8 @@
         document.removeEventListener('mousemove', rangeMaxMouseMoveHandler);
         document.removeEventListener('mouseup', rangeMaxMouseUpHandler);
 
-        generateFiltElements();
-        generateFiltCount();
+        generateGoods();
+        generateCountGoods();
       }
 
       return false;
@@ -506,7 +506,7 @@
         arrFilterSort.sort = '';
       }
       window.catalog.cleanAllCards();
-      generateFiltElements();
+      generateGoods();
     });
   }
 
@@ -557,7 +557,7 @@
 
   window.filter = {
     updateCatalog: updateCatalog,
-    generateFiltElements: generateFiltElements,
-    generateFiltCount: generateFiltCount
+    generateGoods: generateGoods,
+    generateCountGoods: generateCountGoods
   };
 })();

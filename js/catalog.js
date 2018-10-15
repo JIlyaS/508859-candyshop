@@ -66,10 +66,12 @@
       if (cardFavotireElement.classList.contains('card__btn-favorite--selected')) {
         good.favorite = true;
         favorites.push(good);
-        window.filter.generateFiltCount();
+        window.filter.generateCountGoods();
       } else {
         delete good.favorite;
-        favorites = [];
+        var index = favorites.indexOf(good);
+        favorites.splice(index, 1);
+        window.filter.generateCountGoods();
       }
     }
 
@@ -93,7 +95,7 @@
         // Если количество больше 0, то добавляем товар в корзину
         // Если товар уже содержится в корзине, увеличиваем количество товара
         var containsObject = getContainsObject(basketCards, goodCard);
-        if (containsObject === true) {
+        if (containsObject) {
           addGoodAmount(basketCards, goodCard);
         } else {
           goodCard.orderedAmount = 1;
@@ -106,8 +108,8 @@
         // Уменьшить количество товара на единицу при добавлении товара
         good.amount--;
         // При уменьшении количества генерируем показатель товара
-        window.filter.generateFiltCount();
-        window.filter.generateFiltElements();
+        window.filter.generateCountGoods();
+        window.filter.generateGoods();
         showBasket(basketCards, goodsCards, addElementsCard);
         checkEmptyBasket();
       }
@@ -232,8 +234,8 @@
         getContentTotal();
 
         // При уменьшении количества генерируем показатель товара
-        window.filter.generateFiltCount();
-        window.filter.generateFiltElements();
+        window.filter.generateCountGoods();
+        window.filter.generateGoods();
       } else {
         setCountInBasket(window.data.UNIT_GOODS, false);
         setCostInBasket(good.price, good.orderedAmount, false);
@@ -253,8 +255,8 @@
         getContentTotal();
 
         // При увеличении количества генерируем показатель товара
-        window.filter.generateFiltCount();
-        window.filter.generateFiltElements();
+        window.filter.generateCountGoods();
+        window.filter.generateGoods();
       }
     }
 
@@ -344,27 +346,10 @@
     var deliverStoreInput = document.querySelector('#deliver__store');
     var deliverCourierInput = document.querySelector('#deliver__courier');
 
-    if (window.order.paymentCash.checked === true) {
-      window.order.disabledInput(window.order.paymentCardWrap, true);
-    } else {
-      window.order.disabledInput(window.order.paymentCardWrap, false);
-    }
-    if (window.order.paymentCard.checked === true) {
-      window.order.disabledInput(window.order.paymentCashWrap, true);
-    } else {
-      window.order.disabledInput(window.order.paymentCashWrap, false);
-    }
-    if (deliverCourierInput.checked === true) {
-      window.order.disabledInput(window.order.deliverStore, true);
-    } else {
-      window.order.disabledInput(window.order.deliverStore, false);
-    }
-    if (deliverStoreInput.checked === true) {
-      window.order.disabledInput(window.order.deliverCourier, true);
-    } else {
-      window.order.disabledInput(window.order.deliverCourier, false);
-    }
-
+    window.order.disabledInput(window.order.paymentCardWrap, window.order.paymentCash.checked);
+    window.order.disabledInput(window.order.paymentCashWrap, window.order.paymentCard.checked);
+    window.order.disabledInput(window.order.deliverStore, deliverCourierInput.checked);
+    window.order.disabledInput(window.order.deliverCourier, deliverStoreInput.checked);
   }
 
   // Отобразить товар в корзине
@@ -397,19 +382,25 @@
   }
 
   function setCountInBasket(count, operatorBool) {
-    if (operatorBool === true) {
+    if (operatorBool) {
       countBasket = countBasket + count;
-    } else if (operatorBool === false) {
+    } else if (!operatorBool) {
       countBasket = countBasket - count;
     }
   }
 
   function setCostInBasket(cost, count, operatorBool) {
-    if (operatorBool === true) {
+    if (operatorBool) {
       costBasket = costBasket + (cost * count);
-    } else if (operatorBool === false) {
+    } else if (!operatorBool) {
       costBasket = costBasket - (cost * count);
     }
+  }
+
+  function clearBasket() {
+    basketCards = [];
+    countBasket = 0;
+    costBasket = 0;
   }
 
   // Создаем скрипт загрузки данных по JSONP и выводим его в index.html
@@ -426,7 +417,7 @@
     checkEmptyBasket: checkEmptyBasket,
     checkEmptyHeaderBasket: checkEmptyHeaderBasket,
     removeBasket: removeBasket,
-    basketCards: basketCards,
+    clearBasket: clearBasket,
     mainHeaderBasket: mainHeaderBasket
   };
 

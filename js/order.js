@@ -212,7 +212,7 @@
     window.catalog.removeBasket();
     window.catalog.checkEmptyHeaderBasket();
 
-    window.catalog.basketCards = [];
+    window.catalog.clearBasket();
     window.catalog.checkEmptyBasket();
     evt.preventDefault();
   });
