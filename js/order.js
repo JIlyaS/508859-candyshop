@@ -32,9 +32,15 @@
 
   // Заблокирвовать input у скрытых полей формы
   function disabledInput(el, bool) {
-    var allInputBlock = el.querySelectorAll('input');
-    for (var k = 0; k < allInputBlock.length; k++) {
-      allInputBlock[k].disabled = bool;
+    // Для полей input
+    var blockAllInputs = el.querySelectorAll('input');
+    for (var k = 0; k < blockAllInputs.length; k++) {
+      blockAllInputs[k].disabled = bool;
+    }
+
+    var blockAllTextAreas = el.querySelectorAll('textarea');
+    for (var l = 0; l < blockAllTextAreas.length; l++) {
+      blockAllTextAreas[l].disabled = bool;
     }
   }
 
@@ -62,70 +68,6 @@
     return !!(result >= 10 && result % 10 === 0);
   }
 
-  var MESSAGE_ERRORS = {
-    contactDataName: {
-      tooShort: 'Имя должно состоять минимум из 2-х символов',
-      tooLong: 'Имя не должно превышать 25-ти символов',
-      patternMismatch: '',
-      valueMissing: 'Обязательное поле'
-    },
-    contactDataTel: {
-      tooShort: 'Номер телефона должен состоять из 11 цифр',
-      tooLong: 'Номер телефона должен состоять из 11 цифр',
-      patternMismatch: '',
-      valueMissing: 'Обязательное поле'
-    },
-    paymentCardNumber: {
-      tooShort: 'Номер банковской карты должен состоять из 16 цифр',
-      tooLong: 'Номер банковской карты должен состоять из 16 цифр',
-      patternMismatch: 'Номер банковской карты не должен содержать буквы и знаки препинания',
-      customError: 'Данные карты не прошли проверку подлинности',
-      valueMissing: 'Обязательное поле'
-    },
-    paymentCardDate: {
-      tooShort: 'Формат даты должен состоять из 5 символов',
-      tooLong: 'Формат даты должен состоять из 5 символов',
-      patternMismatch: 'Формат даты должен быть мм/ГГ и состоять только из цифр',
-      valueMissing: 'Обязательное поле'
-    },
-    paymentСardСvc: {
-      tooShort: 'Номер CVC должен состоять из трёх цифр',
-      tooLong: 'Номер CVC должен состоять из трёх цифр',
-      patternMismatch: 'Поле CVC содержит только цифры (100-999)',
-      valueMissing: 'Обязательное поле'
-    },
-    paymentCardholder: {
-      tooShort: 'Имя держателя карты должно состоять минимум из 4-х символов',
-      tooLong: 'Имя держателя карты не должно превышать 50-ти символов',
-      patternMismatch: 'Имя держателя карты должно быть написано латиницей',
-      valueMissing: 'Обязательное поле'
-    },
-    deliverStreet: {
-      tooShort: '',
-      tooLong: 'Название улицы не должно превышать 50-ти символов',
-      patternMismatch: '',
-      valueMissing: 'Обязательное поле'
-    },
-    deliverHouse: {
-      tooShort: '',
-      tooLong: '',
-      patternMismatch: '',
-      valueMissing: 'Обязательное поле'
-    },
-    deliverFloor: {
-      tooShort: '',
-      tooLong: 'Этаж не должен превышать 3-х символов',
-      patternMismatch: 'Поле Этаж содержит только цифры',
-      valueMissing: ''
-    },
-    deliverRoom: {
-      tooShort: '',
-      tooLong: '',
-      patternMismatch: '',
-      valueMissing: 'Обязательное поле'
-    }
-  };
-
   function getCustomErrors(el, obj) {
     if (el.validity.tooShort) {
       el.setCustomValidity(obj.tooShort);
@@ -135,8 +77,10 @@
       el.setCustomValidity(obj.patternMismatch);
     } else if (el.validity.valueMissing) {
       el.setCustomValidity(obj.valueMissing);
-    } else if (el === paymentCardNumber && !checkLuhn(paymentCardNumber.value)) {
-      el.setCustomValidity(obj.customError);
+    } else if (el === paymentCardNumber) {
+      if (paymentCardNumber.disabled === false && !checkLuhn(paymentCardNumber.value)) {
+        el.setCustomValidity(obj.customError);
+      }
     } else {
       el.setCustomValidity('');
     }
@@ -158,25 +102,25 @@
   form.addEventListener('change', function (evt) {
     var target = evt.target;
     if (contactDataName === target) {
-      getCustomErrors(contactDataName, MESSAGE_ERRORS['contactDataName']);
+      getCustomErrors(contactDataName, window.data.MESSAGE_ERRORS['contactDataName']);
     } else if (contactDataTel === target) {
-      getCustomErrors(contactDataTel, MESSAGE_ERRORS['contactDataTel']);
+      getCustomErrors(contactDataTel, window.data.MESSAGE_ERRORS['contactDataTel']);
     } else if (paymentCardNumber === target) {
-      getCustomErrors(paymentCardNumber, MESSAGE_ERRORS['paymentCardNumber']);
+      getCustomErrors(paymentCardNumber, window.data.MESSAGE_ERRORS['paymentCardNumber']);
     } else if (paymentCardDate === target) {
-      getCustomErrors(paymentCardDate, MESSAGE_ERRORS['paymentCardDate']);
+      getCustomErrors(paymentCardDate, window.data.MESSAGE_ERRORS['paymentCardDate']);
     } else if (paymentСardСvc === target) {
-      getCustomErrors(paymentСardСvc, MESSAGE_ERRORS['paymentСardСvc']);
+      getCustomErrors(paymentСardСvc, window.data.MESSAGE_ERRORS['paymentСardСvc']);
     } else if (paymentCardholder === target) {
-      getCustomErrors(paymentCardholder, MESSAGE_ERRORS['paymentCardholder']);
+      getCustomErrors(paymentCardholder, window.data.MESSAGE_ERRORS['paymentCardholder']);
     } else if (deliverStreet === target) {
-      getCustomErrors(deliverStreet, MESSAGE_ERRORS['deliverStreet']);
+      getCustomErrors(deliverStreet, window.data.MESSAGE_ERRORS['deliverStreet']);
     } else if (deliverHouse === target) {
-      getCustomErrors(deliverHouse, MESSAGE_ERRORS['deliverHouse']);
+      getCustomErrors(deliverHouse, window.data.MESSAGE_ERRORS['deliverHouse']);
     } else if (deliverFloor === target) {
-      getCustomErrors(deliverFloor, MESSAGE_ERRORS['deliverFloor']);
+      getCustomErrors(deliverFloor, window.data.MESSAGE_ERRORS['deliverFloor']);
     } else if (deliverRoom === target) {
-      getCustomErrors(deliverRoom, MESSAGE_ERRORS['deliverRoom']);
+      getCustomErrors(deliverRoom, window.data.MESSAGE_ERRORS['deliverRoom']);
     }
   }, true);
 
@@ -188,6 +132,26 @@
     }
   }
 
+  var payment = form.querySelector('.payment__inner');
+  var paymentCash = form.querySelector('#payment__cash');
+  var paymentCard = form.querySelector('#payment__card');
+  var paymentCardWrap = payment.querySelector('.payment__card-wrap');
+  var paymentCashWrap = payment.querySelector('.payment__cash-wrap');
+  paymentCash.addEventListener('click', selectPaymentCash);
+  paymentCard.addEventListener('click', selectPaymentCard);
+
+  function selectPaymentCash() {
+    paymentCardWrap.classList.add('visually-hidden');
+    paymentCashWrap.classList.remove('visually-hidden');
+    disabledInput(paymentCardWrap, true);
+  }
+
+  function selectPaymentCard() {
+    paymentCardWrap.classList.remove('visually-hidden');
+    paymentCashWrap.classList.add('visually-hidden');
+    disabledInput(paymentCardWrap, false);
+  }
+
   paymentCardDate.addEventListener('keyup', inputKeyupHandler);
 
   form.addEventListener('change', dataValiditySubmitHandler);
@@ -195,12 +159,14 @@
   var paymentCardStatus = document.querySelector('.payment__card-status');
 
   function dataValiditySubmitHandler() {
-    if (paymentCardNumber.validity.valid &&
-        checkLuhn(paymentCardNumber.value) &&
-        paymentCardDate.validity.valid &&
-        paymentСardСvc.validity.valid &&
-        paymentCardholder.validity.valid) {
-      paymentCardStatus.textContent = 'Одобрен';
+    if (paymentCardNumber.disabled === false) {
+      if (paymentCardNumber.validity.valid &&
+          checkLuhn(paymentCardNumber.value) &&
+          paymentCardDate.validity.valid &&
+          paymentСardСvc.validity.valid &&
+          paymentCardholder.validity.valid) {
+        paymentCardStatus.textContent = 'Одобрен';
+      }
     }
   }
 
@@ -241,6 +207,23 @@
     document.querySelectorAll('input').forEach(function (inputElement) {
       inputElement.value = inputElement.defaultValue;
     });
+
+    window.catalog.mainHeaderBasket.textContent = 0;
+    window.catalog.removeBasket();
+    window.catalog.checkEmptyHeaderBasket();
+
+    window.catalog.clearBasket();
+    window.catalog.checkEmptyBasket();
     evt.preventDefault();
   });
+
+  window.order = {
+    disabledInput: disabledInput,
+    paymentCash: paymentCash,
+    paymentCashWrap: paymentCashWrap,
+    paymentCard: paymentCard,
+    paymentCardWrap: paymentCardWrap,
+    deliverCourier: deliverCourier,
+    deliverStore: deliverStore
+  };
 })();
