@@ -195,6 +195,8 @@
     element.addEventListener('click', function (evt) {
       evt.preventDefault();
       window.catalog.cleanAllCards();
+      arrFilterSort.sort = 'Сначала популярные';
+      filterPopular.checked = true;
       resetAllFilters();
       resetCheckbox();
       initSliderCoordinates();
